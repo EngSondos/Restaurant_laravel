@@ -15,9 +15,9 @@ return new class extends Migration
             $table->id();
             $table->decimal('total_price', 8, 2);
             $table->decimal('discount', 5, 2)->default(0);
-            $table->decimal('tax', 5, 2)->default(14);
+            $table->decimal('tax', 5, 2)->default(0.14);
             $table->enum('payment_method', ['CASH', 'VISA']);
-            $table->decimal('service_fee', 5, 2)->default(12);
+            $table->decimal('service_fee', 5, 2)->default(0.12);
             $table->enum('status', ['Pending', 'Accepted', 'Prepare', 'Complete', 'Served', 'Canceled', 'Paid']);
             $table->timestamps();
         });
