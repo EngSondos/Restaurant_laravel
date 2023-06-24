@@ -13,8 +13,6 @@ return new class extends Migration
     {
         Schema::create('cart_product', function (Blueprint $table) {
             $table->id();
-            $table->string('product_id');
-            $table->string('user_id');
             $table->decimal('total_price',8,2);
             $table->integer('quantity')->default(1);
             $table->timestamps();
