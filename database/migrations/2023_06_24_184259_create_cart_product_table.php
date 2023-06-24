@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('product_id');
             $table->string('user_id');
-            $table->decimal('total_price',10,2);
+            $table->decimal('total_price',8,2);
             $table->integer('quantity')->default(1);
             $table->timestamps();
         });
