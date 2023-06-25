@@ -4,10 +4,8 @@ namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\User;
-use Illuminate\Validation\Rule;
 
-
-class StoreUserRequest extends FormRequest
+class UpdateUserRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -25,32 +23,23 @@ class StoreUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255',
-            'email' => [
-                'required',
-                'string',
-                'email',
-                'max:255',
-                Rule::unique('users')->whereNull('deleted_at'),
-
-        ],
-            'phone' => ['required',
+            'name' => 'string|max:255',
+            'email' => 'string|email|max:255|unique:users,email',
+            'phone' => [
             'string',
+            'unique:users,phone',
             'size:11',
             'regex:/^[0-9]+$/',
-            Rule::unique('users')->whereNull('deleted_at'),
-
          
          ],
             
             'image'=>'nullable|image|max:2048',
             'password'=>[
-                'required',
                 'string',
                 'min:8',
                 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
                         ],
-            'role' => 'required|in:' . implode(',', array_keys(User::$roleOptions)),
+            'role' => 'in:' . implode(',', array_keys(User::$roleOptions)),
         ];
     }
 }
