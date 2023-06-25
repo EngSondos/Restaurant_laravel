@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('image');
             $table->decimal('discount',2,2)->nullable(true);
             $table->boolean('status')->default(true);
-            $table->string('extra');;
+            $table->string('extra')->nullable();
             $table->timestamps();
         });
     }
