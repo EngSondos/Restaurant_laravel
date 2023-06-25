@@ -15,7 +15,7 @@ return new class extends Migration
             $table->id();
             $table->date('start_date');
             $table->date('end_date')->nullable(true);
-            $table->enum('status',['canceled','progress', 'completed','accepted']);
+            $table->enum('status',['canceled','progress', 'completed','accepted'])->default('progress');
             $table->timestamps();
         });
     }
