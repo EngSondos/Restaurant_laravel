@@ -21,8 +21,9 @@ class UpdateIngredientsRequest extends FormRequest
      */
     public function rules(): array
     {
+        
         return [
-            'name' => 'required|unique:ingredients,name,'.$this->id,
+            'name' => 'required|unique:ingredients,name,'.$this->ingredient,
             "profit"=>"required|numeric",
             "quntity"=>"required|numeric"
         ];

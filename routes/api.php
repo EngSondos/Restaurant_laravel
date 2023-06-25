@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\IngredientController;
+use App\Http\Controllers\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -21,10 +22,9 @@ use Illuminate\Support\Facades\Route;
 
 // Route::apiResource('/ingredients',IngredientController::class);
 
-Route::prefix('/ingredients')->controller(IngredientController::class)->group(function(){
-    Route::post('','store');
-    Route::get('','index');
-    Route::get('/{id}','show');
-    Route::put('/{id}','update');
-    Route::get('/status/{id}','changeStatus');
-});
+
+Route::apiResource('ingredients',IngredientController::class)->except('destroy');
+Route::get('ingredients/status/{id}',[IngredientController::class,'changeStatus']);
+
+Route::apiResource('products',ProductController::class)->except('destroy');
+// Route::get('products/status/{id}','changeStatus');
