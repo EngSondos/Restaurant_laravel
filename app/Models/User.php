@@ -28,6 +28,16 @@ class User extends Authenticatable
 
     ];
 
+    public static $roleOptions = [
+        'Admin' => 'Admin',
+        'Waiter' => 'Waiter',
+        'Cashier' => 'Cashier',
+        'Kitchen' => 'Kitchen',
+
+    ];
+
+
+
     /**
      * The attributes that should be hidden for serialization.
      *
@@ -46,5 +56,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
+        'phone' => 'string',
+
     ];
 }
