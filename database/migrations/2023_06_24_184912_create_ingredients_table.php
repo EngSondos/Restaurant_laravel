@@ -13,6 +13,7 @@ return new class extends Migration
     {
         Schema::create('ingredients', function (Blueprint $table) {
             $table->id();
+            $table->string('name')->unique();
             $table->decimal('quntity',5,2);
             $table->decimal('price',6,2);
             $table->decimal('profit',2,2);

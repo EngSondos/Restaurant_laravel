@@ -11,6 +11,7 @@ class Ingredient extends Model
     protected $fillable =[
         'profit',
         'price',
-        'quntity'
+        'quntity',
+        'name'
     ];
 }

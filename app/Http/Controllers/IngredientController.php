@@ -1,0 +1,85 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Http\Requests\Ingredients\StoreIngredientsRequest;
+use App\Http\Requests\Ingredients\UpdateIngredientsRequest;
+use App\Http\Resources\IngredientRescource;
+use App\Http\Resources\IngredientResource;
+use App\Models\Ingredient;
+use App\Traits\ApiRespone;
+use Illuminate\Http\Request;
+use Illuminate\Http\Response;
+
+class IngredientController extends Controller
+{
+    use ApiRespone;
+    /**
+     * Display a listing of the resource.
+     */
+    public function index()
+    {
+
+        return IngredientResource::collection(Ingredient::paginate());
+        //  $this->sendData('',IngredientResource::collection(Ingredient::paginate()));
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function store(StoreIngredientsRequest $request)
+    {
+       $data =  $request->all();
+       return Ingredient::create($data) ?
+        $this->success("Ingredient Created Successfully",Response::HTTP_CREATED) :
+        $this->error('Ingredient Not Created '.Response::HTTP_CONFLICT);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(int $id)
+    {
+        $ingredient=Ingredient::find($id);
+        if(!$ingredient){
+            return $this->error('This Ingredient Not Exist');
+        }
+        return $this->sendData('',new IngredientResource($ingredient));
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(UpdateIngredientsRequest $request, int $id)
+    {
+        $ingredient=Ingredient::find($id);
+        if(!$ingredient){
+            return $this->error('This Ingredient Not Exist');
+        }
+
+        $data=$request->all();
+       return $ingredient->update($data) ?
+        $this->success("Ingredient Updates Successfully") :
+       $this->error('Ingredient Not Updated '.Response::HTTP_NOT_MODIFIED);
+
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function changeStatus(int $id)
+    {
+        $ingredient=Ingredient::find($id);
+
+        if(!$ingredient){
+            return $this->error('This Ingredient Not Exist');
+        }
+
+        $ingredient->status = !$ingredient->status;
+        if ($ingredient->save()) {
+            return $this->success("Ingredient Updated Successfully");
+        } else {
+            return $this->error('Ingredient Not Updated ' . Response::HTTP_NOT_MODIFIED);
+        }
+    }
+}
