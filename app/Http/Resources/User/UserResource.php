@@ -22,5 +22,31 @@ class UserResource extends JsonResource
             'image' => $this->image,
             'role' => $this->role,
         
-        ];     }
+        ];    
+    
+    }
+    public function with($request)
+    {
+
+        if ($request->route()->getName() === 'users.show') {
+            return [];
+        }
+        return [
+            'meta' => [
+                'pagination' => [
+                    'total' => $this->resource->total(),
+                    'per_page' => $this->resource->perPage(),
+                    'current_page' => $this->resource->currentPage(),
+                    'last_page' => $this->resource->lastPage(),
+                    'from' => $this->resource->firstItem(),
+                    'to' => $this->resource->lastItem(),
+                ]
+            ],
+        ];
+    }
+
+
+
+
+
 }

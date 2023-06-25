@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Resources\User\UserResource;
 use App\Traits\ApiRespone;
+use App\Http\Services\Media;
+
 
 class UserController extends Controller
 {
@@ -18,7 +20,8 @@ class UserController extends Controller
     public function index()
     {
         $users = User::paginate();
-      return  $this->sendData('Users Retrieved Successfully', UserResource::collection($users));
+        return UserResource::collection($users)
+        ->additional(['message' => 'Users Retrieved Successfully']);
         
     }
 
@@ -28,8 +31,12 @@ class UserController extends Controller
     public function store(StoreUserRequest $request)
     {
  
+        $data = $request->except('image');
+        if ($request->hasFile('image')) {
+            $data['image'] = Media::upload($request->image, 'images/users');
+        }
 
-         User::create($request->validated());
+         User::create($data);
         return $this->sendData('User added successfully','');
        
 
@@ -39,9 +46,10 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(User $user)
     {
-        //
+        return new UserResource($user);
+
     }
 
     /**
