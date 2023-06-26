@@ -19,4 +19,17 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-Route::post('category',[CartegoryController::class,'store']);
+Route::prefix('category')->controller(CartegoryController::class)->name('category')->group(function (){
+    Route::get('/','index')->name('.index');
+
+    Route::post('/','store')->name('.store');
+
+    Route::get('/{category}','edit')->name('.edit');
+
+    Route::put('/{category}','update')->name('.update');
+
+    Route::get('/{category}','show')->name('.show');
+    
+    Route::delete('/{category}','destroy')->name('.delete');
+});
+

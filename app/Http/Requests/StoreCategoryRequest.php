@@ -36,6 +36,7 @@ class StoreCategoryRequest extends FormRequest
         if($data["status"]== null){
             $data["status"] = '1';
         };
+
         return $data;
     }
 }

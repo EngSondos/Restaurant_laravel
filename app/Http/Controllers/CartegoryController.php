@@ -4,8 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreCategoryRequest;
 use App\Http\Requests\UpdateCategoryRequest;
+use App\Http\Resources\CategoryResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use App\Http\Services\Media;
+use App\Models\Category;
 
 class CartegoryController extends Controller
 {
@@ -14,7 +17,9 @@ class CartegoryController extends Controller
     */
     public static function index()
     {
-        return ; //return all categories
+        $categories = Category::paginate();
+        return CategoryResource::collection($categories)
+        ->additional(['message' => 'All Categories has been retrieved']);
     }
 
     /*
@@ -32,15 +37,17 @@ class CartegoryController extends Controller
     {
         if($req->validated())
         {
-            $imageName = $req->file('image')->hashName(); // to get the file name of the image and store it in the variable
+            $imageFile = $req->image;
 
-            $req->file('image')->move(public_path('images\categories'),$imageName);
+            $dir = 'images\categories';
+
+            Media::upload($imageFile,$dir);
 
             $data = $req->except('image');
 
             $data = $req->validated();
-            
-            $data['image'] = $imageName;
+                
+            $data['image'] = $req->image->getClientOriginalName(); //errory
 
             if(DB::table('categories')->insert($data)){
                 return $data; // return the list of categories
@@ -53,7 +60,12 @@ class CartegoryController extends Controller
     */
     public static function edit($id)
     {
-        return ; //return the data of this category
+        $category = DB::table('categories')->where('id',$id)->first();
+        if(is_null($category)){
+            //return Invalid Id as a message
+        }
+        
+        return compact('$category'); //return the data of this category
     }
 
     /*
