@@ -1,5 +1,5 @@
 <?php
-namespace app\Traits;
+namespace App\Traits;
 trait ApiRespone{
     public function apiRespone(string $message,array $data,bool $error,int $statuscode){
         return response()->json(
