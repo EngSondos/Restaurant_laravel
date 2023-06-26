@@ -24,7 +24,12 @@ class UpdateUserRequest extends FormRequest
     {
         return [
             'name' => 'string|max:255',
-            'email' => 'string|email|max:255|unique:users,email',
+            'email' => [
+                'string',
+                'email',
+                'max:255',
+                'regex:/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/',
+            ],
             'phone' => [
             'string',
             'unique:users,phone',
