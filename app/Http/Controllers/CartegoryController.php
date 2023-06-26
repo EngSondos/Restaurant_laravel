@@ -11,6 +11,8 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Services\Media;
 use App\Models\Category;
 
+use function PHPUnit\Framework\returnSelf;
+
 class CartegoryController extends Controller
 {
     use ApiRespone;
@@ -27,14 +29,17 @@ class CartegoryController extends Controller
     /*
     ** Display Specific Category
     */
-    // public static function show(Request $req) //OK
-    // {
-    //     $categories = Category::select(['name','image'])->get();
-    //     if($req->name){
-
-    //     }
-    //     return ; //return only the data of the specified category
-    // }
+    public function show(Request $req) //OK
+    {
+        $filtered = DB::table('categories')->
+        select(['name','image'])->
+        where('name','like',$req["name"].'%')->
+        get();
+        //check if the filtered array contains items or not
+        return $filtered->first()?
+        $this->sendData('',$filtered):
+        $this->error('No category has this name');
+    }
 
     /*
     ** Create Category
@@ -63,10 +68,11 @@ class CartegoryController extends Controller
         }
     }
 
+
     /*
     ** Edit Category
     */
-    public function edit(Category $category)
+    public function edit(Category $category)  //OK
     {        
         return $this->sendData('',new CategoryResource($category));  
     }
