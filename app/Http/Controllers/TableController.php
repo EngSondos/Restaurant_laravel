@@ -49,7 +49,7 @@ class TableController extends Controller
         $table=Table::find($id);
 
         if(!$table){
-            return $this->error('user not Exist');
+            return $this->error('table not Exist');
         }
         return $this->sendData('',new TableResource($table));  
       }
