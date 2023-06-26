@@ -24,11 +24,11 @@ Route::prefix('category')->controller(CartegoryController::class)->name('categor
 
     Route::post('/','store')->name('.store');
 
-    Route::get('/{category}','edit')->name('.edit');
+    Route::get('/{category}/edit','edit')->name('.edit');
 
     Route::put('/{category}','update')->name('.update');
 
-    Route::get('/{category}','show')->name('.show');
+    Route::get('/show','show')->name('.show');
     
     Route::delete('/{category}','destroy')->name('.delete');
 });

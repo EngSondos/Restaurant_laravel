@@ -24,19 +24,7 @@ class StoreCategoryRequest extends FormRequest
         //validations
         return [
             'name'   => 'string|required|max:50|unique:categories',
-            'image'  => 'required|max:1000|mimes:jpg,png,jpeg,gif',
-            'status' => 'required|in:0,1'
-        ];
-        
-    }
-
-    public function validationData():array{
-        $data = parent::validationData();
-        
-        if($data["status"]== null){
-            $data["status"] = '1';
-        };
-
-        return $data;
+            'image'  => 'required|max:1000|mimes:jpg,png,jpeg,gif'
+        ]; 
     }
 }
