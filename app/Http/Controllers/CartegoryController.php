@@ -47,7 +47,9 @@ class CartegoryController extends Controller
 
             $data = $req->validated();
                 
-            $data['image'] = $req->image->getClientOriginalName(); //errory
+            $data['image'] = $req->image->getClientOriginalName(); //the hashname of the image is not working so i use the original name of the image
+
+            $data['created_at'] = now();
 
             if(DB::table('categories')->insert($data)){
                 return $data; // return the list of categories

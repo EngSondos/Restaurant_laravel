@@ -23,8 +23,8 @@ class StoreCategoryRequest extends FormRequest
     {
         //validations
         return [
-            'name' => ['string','required','max:50'],
-            'image' => ['required','max:1000','mimes:jpg,png,jpeg,gif'],
+            'name'   => 'string|required|max:50|unique:categories',
+            'image'  => 'required|max:1000|mimes:jpg,png,jpeg,gif',
             'status' => 'required|in:0,1'
         ];
         
@@ -32,7 +32,7 @@ class StoreCategoryRequest extends FormRequest
 
     public function validationData():array{
         $data = parent::validationData();
-
+        
         if($data["status"]== null){
             $data["status"] = '1';
         };
