@@ -20,6 +20,7 @@ class TableResource extends JsonResource
             'number'=> $this->number,
             'number'=> $this->number,
             'guest_numbers'=>$this->guest_numbers,
+            'status'=>$this->status,
         ];
     }
 

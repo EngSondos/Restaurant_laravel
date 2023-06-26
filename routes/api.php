@@ -33,7 +33,10 @@ Route::prefix('users')->group(function(){
 Route::prefix('tables')->group(function(){
     Route::get('',[TableController::class, 'index']);
     Route::post('',[TableController::class, 'store']);
+    Route::get('available',[TableController::class, 'getAvailableTables']);
     Route::get('/{id}',[TableController::class, 'show']);
     Route::put('/{id}',[TableController::class, 'update']);
     Route::get('status/{id}',[TableController::class, 'changeStatus']);
+    Route::get('available',[TableController::class, 'getAvailableTables']);
+
 });

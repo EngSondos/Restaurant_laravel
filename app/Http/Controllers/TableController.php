@@ -25,6 +25,17 @@ class TableController extends Controller
         ->additional(['message' => 'Tables Retrieved Successfully']);
     }
 
+
+    public function getAvailableTables()
+{
+    $status = 1; // only show available tables
+
+    $tables = Table::where('status', $status)->paginate();
+
+    return TableResource::collection($tables)
+        ->additional(['message' => 'Available Tables Retrieved Successfully']);
+}
+
     /**
      * Store a newly created resource in storage.
      */
