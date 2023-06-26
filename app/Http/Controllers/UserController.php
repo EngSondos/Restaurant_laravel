@@ -56,7 +56,7 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show( $id)
+    public function show(int $id)
     {
         
         $user=User::find($id);
@@ -73,7 +73,7 @@ class UserController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateUserRequest $request,  $id)
+    public function update(UpdateUserRequest $request, int $id)
     {
         $user=User::find($id);
         
@@ -98,7 +98,7 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy($id)
+    public function destroy(int $id)
     {
 
         $user = User::find($id);
