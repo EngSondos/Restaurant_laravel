@@ -57,7 +57,7 @@ class CartegoryController extends Controller
             $data = $req->validated();
 
             $data['image'] = Media::upload($req->image,'images\categories');  //the hashname of the image is not working so i use the original name of the image
-
+    
             $data['created_at'] = now();
 
             if(DB::table('categories')->insert($data)){
@@ -85,7 +85,7 @@ class CartegoryController extends Controller
         if($req->hasFile('image')){
             $imageName = Media::upload($req->file('image'),'images\categories');
             $data['image'] = $imageName;
-            Media::delete(public_path("images\categories/{$category->image}"));
+            Media::delete(public_path("images\categories/{$category->image}"));    
         }   
         return DB::table('categories')->where('id','=',$category->id)->update($data);
     }
@@ -103,7 +103,7 @@ class CartegoryController extends Controller
             return $this->success('Category cannot be deleted, but it\'s now unavialable',);
         }else{
             $category->delete();
-            Media::delete(public_path("images\categories/{$category->image}"));
+            Media::delete(public_path("images\categories/{$category->image}"));    
             return $this->success('Category Deleted successfully',);
         }
         
