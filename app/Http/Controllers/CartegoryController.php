@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Services\Media;
 use App\Models\Category;
+use GuzzleHttp\Psr7\UploadedFile;
 
 use function PHPUnit\Framework\returnSelf;
 
@@ -21,24 +22,25 @@ class CartegoryController extends Controller
     */
     public function index()  //OK
     {
-        $categories = Category::paginate();
+        $categories = Category::paginate(8);
         return CategoryResource::collection($categories)
         ->additional(['message' => 'All Categories has been retrieved']);
     }
 
     /*
-    ** Display Specific Category
+    ** Display Specific Category According to search keyword
     */
     public function show(Request $req) //OK
     {
         $filtered = DB::table('categories')->
         select(['name','image'])->
         where('name','like',$req["name"].'%')->
+        orderBy('name')->
         get();
         //check if the filtered array contains items or not
         return $filtered->first()?
         $this->sendData('',$filtered):
-        $this->error('No category has this name');
+        $this->error('No category with this name');
     }
 
     /*
@@ -48,22 +50,16 @@ class CartegoryController extends Controller
     {
         if($req->validated())
         {
-            $imageFile = $req->image;
-
-            $dir = 'images\categories';
-
-            Media::upload($imageFile,$dir);
-
             $data = $req->except('image');
 
             $data = $req->validated();
-                
-            $data['image'] = $req->image->getClientOriginalName(); //the hashname of the image is not working so i use the original name of the image
+
+            $data['image'] = Media::upload($req->image,'images\categories');  //the hashname of the image is not working so i use the original name of the image
 
             $data['created_at'] = now();
 
             if(DB::table('categories')->insert($data)){
-                return $data; // return the list of categories
+                return $this->sendData('Category has been stored successfully',$data); // return the list of categories
             }
         }
     }
@@ -81,17 +77,26 @@ class CartegoryController extends Controller
     ** Update Category
     */
 
-    public function update(UpdateCategoryRequest $req , $id)
+    public function update(UpdateCategoryRequest $req , Category $category)
     {
-        return ; //either error or redirection to the list of categories
+
+        $data = $req->except('image','_method');
+        if($req->hasFile('image')){
+            $imageName = Media::upload($req->file('image'),'images\categories');
+            $data['image'] = $imageName;
+            Media::delete(public_path("images\categories/{$category->image}"));
+        }   
+        return DB::table('categories')->where('id','=',$category->id)->update($data);
     }
 
     /*
     ** Delete Category
     */
-    public function destroy($id)
-    {
-        return ; //either error or redirection to the list of categories
-    }
+    // public function destroy(Category $category) //waiting for products
+    // {
+    //     Media::delete($category->image);
+    //     $category->delete();
+    //     return $this->success('Category Deleted successfully',);
+    // }
 
 }

@@ -32,7 +32,7 @@ class CategoryResource extends JsonResource
             'meta' => [
                 'pagination' => [
                     'total' => $this->resource->total(),
-                    'per_page' => $this->resource->perPage(),
+                    'per_page' => $this->resource->per_page(),
                     'current_page' => $this->resource->currentPage(),
                     'last_page' => $this->resource->lastPage(),
                     'from' => $this->resource->firstItem(),

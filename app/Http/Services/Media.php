@@ -18,7 +18,6 @@ class Media {
 
     public static function delete(string $path):bool
     {
-
          if(file_exists($path)){
             unlink($path);
             return true;

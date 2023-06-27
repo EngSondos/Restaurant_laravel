@@ -15,7 +15,7 @@ trait ApiRespone{
     public function error(string $message,int $statuscode=404){
         return $this->Apirespone($message,[],true,$statuscode);
     }
-    public function sendData(string $message,object $data,int $statuscode=200){
+    public function sendData(string $message,$data,int $statuscode=200){
         return $this->Apirespone($message,$data,false,$statuscode);
     }
 
