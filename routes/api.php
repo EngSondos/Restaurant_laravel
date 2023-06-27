@@ -22,6 +22,10 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 
+// Route::middleware('auth:sanctum')->prefix('users')->group(function(){
+//     Route::get('/auth',[UserController::class, 'UserDetails']);
+// });
+
 Route::prefix('users')->group(function(){
     Route::get('',[UserController::class, 'index']);
     Route::post('',[UserController::class, 'store']);
@@ -29,6 +33,8 @@ Route::prefix('users')->group(function(){
     Route::put('/{id}',[UserController::class, 'update']);
     Route::delete('/{id}',[UserController::class, 'destroy']);
 });
+
+
 
 Route::prefix('tables')->group(function(){
     Route::get('',[TableController::class, 'index']);
@@ -40,3 +46,4 @@ Route::prefix('tables')->group(function(){
     Route::get('available',[TableController::class, 'getAvailableTables']);
 
 });
+

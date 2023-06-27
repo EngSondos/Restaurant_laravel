@@ -61,6 +61,8 @@ return [
             'root' => storage_path('app/public/users'),
             'url' => env('APP_URL').'/storage/users',
             'visibility' => 'public',
+            'hashname' => true,
+
         ],
 
     ],

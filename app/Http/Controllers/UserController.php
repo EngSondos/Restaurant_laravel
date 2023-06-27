@@ -43,7 +43,8 @@ class UserController extends Controller
         $data = $request->except('image');
         if ($request->hasFile('image')) {
             $path = $request->file('image')->store('users', 'users');
-            $data['image'] = $path;        }
+            $data['image'] = $path;    
+            }
 
          if (User::create($data)){
             return $this->success('User added successfully',Response::HTTP_CREATED);
@@ -119,4 +120,17 @@ class UserController extends Controller
         $user->delete();
         return $this->success('User Deleted successfully',);
 }
+
+
+        public function UserDetails()
+        {
+            $user = auth()->user();
+            return $this->sendData('',new UserResource($user));
+    }
+        
+
+
+
+
+
 }
