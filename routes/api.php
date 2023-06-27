@@ -24,7 +24,14 @@ use Illuminate\Support\Facades\Route;
 
 
 Route::apiResource('ingredients',IngredientController::class)->except('destroy');
+
 Route::get('ingredients/status/{id}',[IngredientController::class,'changeStatus']);
+Route::get('search/ingredient',[IngredientController::class,'search']);
+Route::get('active/ingredient',[IngredientController::class,'getActiveIngredients']);
+
+
+
 
 Route::apiResource('products',ProductController::class)->except('destroy');
-// Route::get('products/status/{id}','changeStatus');
+Route::get('products/status/{id}',[ProductController::class,'changeStatus']);
+

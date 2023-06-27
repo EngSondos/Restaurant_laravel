@@ -20,7 +20,7 @@ class IngredientController extends Controller
     public function index()
     {
 
-        return IngredientResource::collection(Ingredient::paginate());
+        return IngredientResource::collection(Ingredient::paginate(8));
         //  $this->sendData('',IngredientResource::collection(Ingredient::paginate()));
     }
 
@@ -79,7 +79,18 @@ class IngredientController extends Controller
         if ($ingredient->save()) {
             return $this->success("Ingredient Updated Successfully");
         } else {
-            return $this->error('Ingredient Not Updated ' . Response::HTTP_NOT_MODIFIED);
+            return $this->error('Ingredient Not Updated ' , Response::HTTP_NOT_MODIFIED);
         }
+    }
+    public function search(Request $request)
+    {
+        $keyword =$request->input('keyword','');
+        return IngredientResource::collection(Ingredient::where('name','like',"%$keyword%")->paginate(8));
+    }
+
+    public function getActiveIngredients()
+    {
+        return IngredientResource::collection(Ingredient::where('status','=',1)->paginate(8));
+
     }
 }
