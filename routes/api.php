@@ -30,6 +30,6 @@ Route::prefix('category')->controller(CartegoryController::class)->name('categor
 
     Route::get('/show','show')->name('.show');
     
-    Route::delete('/{category}','destroy')->name('.delete');
+    Route::delete('/{category}','destroy')->name('.destroy');
 });
 

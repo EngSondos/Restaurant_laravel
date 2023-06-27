@@ -17,10 +17,12 @@ use function PHPUnit\Framework\returnSelf;
 class CartegoryController extends Controller
 {
     use ApiRespone;
+
+
     /*
     ** Display All Categories
     */
-    public function index()  //OK
+    public function index()
     {
         $categories = Category::paginate(8);
         return CategoryResource::collection($categories)
@@ -30,7 +32,7 @@ class CartegoryController extends Controller
     /*
     ** Display Specific Category According to search keyword
     */
-    public function show(Request $req) //OK
+    public function show(Request $req)
     {
         $filtered = DB::table('categories')->
         select(['name','image'])->
@@ -46,7 +48,7 @@ class CartegoryController extends Controller
     /*
     ** Create Category
     */
-    public function store(StoreCategoryRequest $req) //OK
+    public function store(StoreCategoryRequest $req)
     {
         if($req->validated())
         {
@@ -66,9 +68,9 @@ class CartegoryController extends Controller
 
 
     /*
-    ** Edit Category
+    ** Edit category to return the data of this category 
     */
-    public function edit(Category $category)  //OK
+    public function edit(Category $category) 
     {        
         return $this->sendData('',new CategoryResource($category));  
     }
@@ -76,7 +78,6 @@ class CartegoryController extends Controller
     /*
     ** Update Category
     */
-
     public function update(UpdateCategoryRequest $req , Category $category)
     {
 
@@ -92,11 +93,20 @@ class CartegoryController extends Controller
     /*
     ** Delete Category
     */
-    // public function destroy(Category $category) //waiting for products
-    // {
-    //     Media::delete($category->image);
-    //     $category->delete();
-    //     return $this->success('Category Deleted successfully',);
-    // }
+    public function destroy(Category $category) 
+    {
+        $filteredproducts = DB::table('products')->select('*')->where('category_id','=',$category->id)->get();
+
+        if(sizeof($filteredproducts->all()) > 0)
+        {
+            DB::table('categories')->where('id','=',$category->id)->update(['status' =>'0']);
+            return $this->success('Category cannot be deleted, but it\'s now unavialable',);
+        }else{
+            $category->delete();
+            Media::delete(public_path("images\categories/{$category->image}"));
+            return $this->success('Category Deleted successfully',);
+        }
+        
+    }
 
 }
