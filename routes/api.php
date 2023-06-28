@@ -47,6 +47,8 @@ Route::prefix('tables')->group(function(){
     Route::put('/{id}',[TableController::class, 'update']);
     Route::get('status/{id}',[TableController::class, 'changeStatus']);
     Route::get('available',[TableController::class, 'getAvailableTables']);
+    Route::get('orders/{id}',[TableController::class, 'getOrders']);
+
 
 });
 
