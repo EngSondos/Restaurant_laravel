@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\CartController;
 use App\Http\Controllers\CartegoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -31,5 +32,20 @@ Route::prefix('category')->controller(CartegoryController::class)->name('categor
     Route::get('/show','show')->name('.show');
     
     Route::delete('/{category}','destroy')->name('.destroy');
+});
+
+
+Route::prefix('cart')->controller(CartController::class)->name('cart')->group(function (){
+    Route::get('/','index')->name('.index');
+
+    Route::post('/','store')->name('.store');
+
+    Route::get('/{cart}/edit','edit')->name('.edit');
+
+    Route::put('/{cart}','update')->name('.update');
+
+    Route::get('/show','show')->name('.show');
+    
+    Route::delete('/{cart}','destroy')->name('.destroy');
 });
 
