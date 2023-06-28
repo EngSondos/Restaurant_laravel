@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Product\StoreProductRequest;
 use App\Models\Product;
 
 use App\Traits\ApiRespone;
@@ -22,7 +23,7 @@ class ProductController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(StoreProductRequest $request)
     {
         // info product info -> ingrdents[id => quntity this product need] , extra [ids]
 
@@ -79,11 +80,16 @@ class ProductController extends Controller
             return $this->error('This Product Not Exist');
         }
         $data = $request->all();
-       if( $product->update($data)){
+       if( $product->update($data))
+       {
         return $this->success('Product Update Succesfully');
-
        }
 
+    }
+
+    public function UpdateIngrdentsForProduct()
+    {
+        
     }
 
     /**
@@ -104,4 +110,18 @@ class ProductController extends Controller
             return $this->error('Ingredient Not Updated ', Response::HTTP_NOT_MODIFIED);
         }
     }
+
+    public function search(Request $request)
+    {
+        $keyword =$request->input('keyword','');
+        return $this->sendData('',Product::where('name','like',"%$keyword%")->paginate(8));
+    }
+
+    public function getActiveIngredients()
+    {
+        return $this->sendData('',Product::where('status','=',1)->paginate(8));
+    }
+
+
+    //filter by price
 }

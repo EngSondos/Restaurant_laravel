@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReservationController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -22,7 +23,7 @@ use Illuminate\Support\Facades\Route;
 
 // Route::apiResource('/ingredients',IngredientController::class);
 
-
+//ingrdents api
 Route::apiResource('ingredients',IngredientController::class)->except('destroy');
 
 Route::get('ingredients/status/{id}',[IngredientController::class,'changeStatus']);
@@ -31,7 +32,13 @@ Route::get('active/ingredient',[IngredientController::class,'getActiveIngredient
 
 
 
-
+//product api
 Route::apiResource('products',ProductController::class)->except('destroy');
 Route::get('products/status/{id}',[ProductController::class,'changeStatus']);
+
+//reservation api for admin
+Route::get('reservation',[ReservationController::class ,'index']);
+Route::get('reservation/{id}',[ReservationController::class ,'getReservationByTableId']);
+Route::get('reservation',[ReservationController::class ,'getReservationByDate']);
+
 
