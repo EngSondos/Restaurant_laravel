@@ -13,7 +13,39 @@ class Order extends Model
     
 
     protected $fillable = [
-        "total_price" , "status" , "user_id" , "table_id" , "customer_id"
+        "total_price" , "status" , "user_id" , "table_id" , "customer_id","discount","tax","service_fee"
     ];
 
+
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'order_product')
+            ->withPivot(['quantity', 'total_price', 'status']);
+    }
+
+    public function setTotalPriceAttribute($value)
+    {
+        $this->attributes['total_price'] = $value;
+    }
+
+    public function getTotalPriceAttribute()
+    {
+        $total = $this->attributes['total_price'];
+
+        $tax = $this->attributes['tax'];
+        $total += $total * $tax;
+
+        $serviceFee = $this->attributes['service_fee'];
+        $total += $total * $serviceFee;
+
+        $discount = $this->attributes['discount'];
+        $total -= $total * $discount;
+
+        return $total;
+    }
+
+
+
+
 }
+

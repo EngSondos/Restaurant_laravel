@@ -14,4 +14,14 @@ class Product extends Model
         "image",
         "category_id"
     ];
+
+    public function order()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function orderproduct()
+    {
+        return $this->hasMany(OrderProduct::class);
+    }
 }

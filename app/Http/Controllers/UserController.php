@@ -6,6 +6,8 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
+use App\Http\Requests\User\UpdateUserProfileRequest;
+
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
 
@@ -128,7 +130,6 @@ class UserController extends Controller
             return $this->sendData('',new UserResource($user));
     }
         
-
 
 
 

@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TableController;
+use App\Http\Controllers\OrderController;
+
 
 
 /*
@@ -24,6 +26,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Route::middleware('auth:sanctum')->prefix('users')->group(function(){
 //     Route::get('/auth',[UserController::class, 'UserDetails']);
+
 // });
 
 Route::prefix('users')->group(function(){
@@ -47,3 +50,9 @@ Route::prefix('tables')->group(function(){
 
 });
 
+
+Route::prefix('orders')->group(function(){
+    Route::get('',[OrderController::class, 'index']);
+    Route::post('',[OrderController::class, 'store']);
+ 
+});
