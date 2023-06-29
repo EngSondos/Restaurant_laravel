@@ -14,4 +14,9 @@ class Reservation extends Model
         'customer_id',
         'status'
     ];
+
+    public function table()
+    {
+        return $this->belongsTo(Table::class);
+    }
 }

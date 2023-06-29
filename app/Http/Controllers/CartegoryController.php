@@ -51,10 +51,10 @@ class CartegoryController extends Controller
 
         // if ($req->hasFile('image')) {
         //     $path = $req->file('image')->store('categories', 'categories');
-        //     $data['image'] = $path;        
+        //     $data['image'] = $path;
         // }
 
-        $data['image'] = Media::upload($req->image, 'images\categories');  //the hashname of the image is not working so i use the original name of the image
+        $data['image'] = Media::upload($req->image, 'categories');  //the hashname of the image is not working so i use the original name of the image
 
         $data['created_at'] = now();
 
@@ -65,7 +65,7 @@ class CartegoryController extends Controller
 
 
     /*
-    ** Edit category to return the data of this category 
+    ** Edit category to return the data of this category
     */
     public function edit(Category $category)
     {
@@ -80,9 +80,9 @@ class CartegoryController extends Controller
 
         $data = $req->except('image', '_method');
         if ($req->hasFile('image')) {
-            $imageName = Media::upload($req->file('image'), 'images\categories');
+            $imageName = Media::upload($req->file('image'), 'categories');
             $data['image'] = $imageName;
-            Media::delete(public_path("images\categories/{$category->image}"));
+            Media::delete($category->image);
         }
         if (DB::table('categories')->where('id', '=', $category->id)->update($data))
             return $this->success('Category updated successfully');
@@ -101,7 +101,7 @@ class CartegoryController extends Controller
             return $this->success('Category cannot be deleted, but it\'s now unavialable',);
         } else {
             $category->delete();
-            Media::delete(public_path("images\categories/{$category->image}"));
+            Media::delete($category->image);
             return $this->success('Category Deleted successfully',);
         }
     }

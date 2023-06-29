@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Product extends Model
 {
@@ -12,10 +13,30 @@ class Product extends Model
         "name" ,
         "total_price"  ,
         "image",
-        "category_id"
+        "category_id",
+        "extra"
     ];
+    protected $casts = [
+        'extra' => 'array',
+    ];
+    public function ingredients():BelongsToMany
+    {
+        return $this->belongsToMany(Ingredient::class,'product_ingredient')->withPivot('quantity', 'total', 'price');
+      }
+
+
+    public function order()
+    {
+        return $this->hasMany(Order::class);
+    }
+
+    public function orderproduct()
+    {
+        return $this->hasMany(OrderProduct::class);
+    }
     public function category()
     {
         return $this->belongsTo(Category::class,'category_id','id');
     }
 }
+
