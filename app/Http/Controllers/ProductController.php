@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\Product\StoreProductRequest;
+use App\Http\Requests\Product\UpdateProductIngredientRequest;
+use App\Http\Requests\Product\UpdateProductRequest;
+use App\Http\Services\Media;
 use App\Models\Product;
 
 use App\Traits\ApiRespone;
@@ -30,21 +33,21 @@ class ProductController extends Controller
         $data = $request->except('ingredients');
         $product = new Product;
         $product->name = $data['name'];
-        $product->image = $request->image;
+       $image_name =  Media::upload($request->image,'product');
+        $product->image = $image_name;
+
         $product->category_id = $request->category_id;
         $product->total_price = $request->total_price;
         $product->extra=json_encode($request->extra);
         $product->save();
-        $ingredientsarr =  $this->addIngredientToProduct($request);
-
-       if( $product->ingredients()->sync($ingredientsarr)){
+       if(  $this->addIngredientToProduct($request,$product)){
         return $this->success('Product Add Succesfully');
        }
        return $this->error('Product Not Add Succesfully');
 
     }
 
-    private function addIngredientToProduct($request)
+    private function addIngredientToProduct($request,$product)
     {
 
         $ingredientsData = [];
@@ -55,7 +58,7 @@ class ProductController extends Controller
             $price = $ingredientData['price'];
             $ingredientsData[$ingredientId] = compact('quantity', 'total', 'price');
         }
-        return $ingredientsData;
+        return  $product->ingredients()->sync($ingredientsData);
     }
 
     /**
@@ -73,13 +76,20 @@ class ProductController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, int $id)
+    public function update(UpdateProductRequest $request, int $id)
     {
         $product = Product::find($id);
         if(!$product){
             return $this->error('This Product Not Exist');
         }
-        $data = $request->all();
+
+        $data = $request->except('image');
+        if($request->hasFile('image'))
+        {
+            Media::delete(basename($product->image),'product');
+            $path=  Media::upload($request->image,'product');
+            $data['image']=$path;
+        }
        if( $product->update($data))
        {
         return $this->success('Product Update Succesfully');
@@ -87,9 +97,15 @@ class ProductController extends Controller
 
     }
 
-    public function UpdateIngrdentsForProduct()
+    public function updateIngredientsForProduct(UpdateProductIngredientRequest $request,int $id)
     {
-        
+        $product = Product::find($id);
+        if(  $this->addIngredientToProduct($request,$product)){
+            return $this->success('Product Ingredients Updated Succesfully');
+           }
+           return $this->error('Product Ingredients Not Update Succesfully');
+
+
     }
 
     /**
@@ -117,11 +133,16 @@ class ProductController extends Controller
         return $this->sendData('',Product::where('name','like',"%$keyword%")->paginate(8));
     }
 
-    public function getActiveIngredients()
+    public function getActiveProducts()
     {
         return $this->sendData('',Product::where('status','=',1)->paginate(8));
     }
 
 
     //filter by price
+
+    public function getByPrice()
+    {
+
+    }
 }

@@ -35,6 +35,9 @@ Route::get('active/ingredient',[IngredientController::class,'getActiveIngredient
 //product api
 Route::apiResource('products',ProductController::class)->except('destroy');
 Route::get('products/status/{id}',[ProductController::class,'changeStatus']);
+Route::put('product/update/ingredients/{product}',[ProductController::class,'updateIngredientsForProduct']);
+Route::get('search/product',[ProductController::class,'search']);
+Route::get('active/product',[ProductController::class,'getActiveProducts']);
 
 //reservation api for admin
 Route::get('reservation',[ReservationController::class ,'index']);
