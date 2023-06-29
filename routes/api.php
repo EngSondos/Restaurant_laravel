@@ -40,7 +40,7 @@ Route::prefix('cart')->controller(CartController::class)->name('cart')->group(fu
 
     Route::post('/','store')->name('.store');
 
-    Route::get('/{cart}/edit','edit')->name('.edit');
+    Route::delete('/','destroyall')->name('.destroyall');
 
     Route::put('/{cart}','update')->name('.update');
 
