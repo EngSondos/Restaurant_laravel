@@ -12,7 +12,7 @@ class Media {
 
          $newImageName = $image->hashName();
          Storage::disk('images')->put($folderName,$image);
-         $url = Storage::url($folderName . '/' . $newImageName);
+         $url = Storage::url('images/'.$folderName . '/' . $newImageName);
          return $url;
 
     }
@@ -22,7 +22,8 @@ class Media {
     public static function delete(string $path):bool
     {
 
-     $path = str_replace('/storage', '', $path);
+     $path = str_replace('/storage/images/', '', $path);
+    //  dd($path);
      if (Storage::disk('images')->delete($path)) {
          return true;
      }

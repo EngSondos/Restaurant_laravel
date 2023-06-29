@@ -48,8 +48,8 @@ Route::get('active/product',[ProductController::class,'getActiveProducts']);
 
 //reservation api for admin
 Route::get('reservation',[ReservationController::class ,'index']);
+Route::get('reservation/date',[ReservationController::class ,'getReservationByDate']);
 Route::get('reservation/{id}',[ReservationController::class ,'getReservationByTableId']);
-Route::get('reservation',[ReservationController::class ,'getReservationByDate']);
 
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

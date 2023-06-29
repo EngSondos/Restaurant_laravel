@@ -33,7 +33,7 @@ class ProductController extends Controller
         $data = $request->except('ingredients');
         $product = new Product;
         $product->name = $data['name'];
-       $image_name =  Media::upload($request->image,'product');
+       $image_name =  Media::upload($request->image,'products');
         $product->image = $image_name;
 
         $product->category_id = $request->category_id;
@@ -86,8 +86,8 @@ class ProductController extends Controller
         $data = $request->except('image');
         if($request->hasFile('image'))
         {
-            Media::delete(basename($product->image),'product');
-            $path=  Media::upload($request->image,'product');
+            Media::delete($product->image);
+            $path=  Media::upload($request->image,'products');
             $data['image']=$path;
         }
        if( $product->update($data))

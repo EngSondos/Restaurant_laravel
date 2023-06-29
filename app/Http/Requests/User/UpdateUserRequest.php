@@ -4,6 +4,7 @@ namespace App\Http\Requests\User;
 
 use Illuminate\Foundation\Http\FormRequest;
 use App\Models\User;
+use Illuminate\Validation\Rule;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -29,15 +30,18 @@ class UpdateUserRequest extends FormRequest
                 'email',
                 'max:255',
                 'regex:/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/',
+                'unique:users,email,'.$this->id,
+
             ],
             'phone' => [
             'string',
-            'unique:users,phone',
             'size:11',
             'regex:/^[0-9]+$/',
-         
+           'unique:users,phone,'.$this->id,
+
+
          ],
-            
+
             'image'=>'nullable|image|max:2048',
             'password'=>[
                 'string',

@@ -13,6 +13,7 @@ class ReservationController extends Controller
     public function index()
     {
         $reservations =  Reservation::with('table')->paginate(8);
+        // dd($reservations);
         return $this->sendData('',$reservations);
     }
 
