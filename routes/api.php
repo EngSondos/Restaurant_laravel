@@ -3,6 +3,8 @@
 use App\Http\Controllers\IngredientController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReservationController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CartegoryController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -89,3 +91,32 @@ Route::prefix('orders')->group(function(){
     Route::post('',[OrderController::class, 'store']);
 
 });
+Route::prefix('category')->controller(CartegoryController::class)->name('category')->group(function (){
+    Route::get('/','index')->name('.index');
+
+    Route::post('/','store')->name('.store');
+
+    Route::get('/{category}/edit','edit')->name('.edit');
+
+    Route::put('/{category}','update')->name('.update');
+
+    Route::get('/show','show')->name('.show');
+
+    Route::delete('/{category}','destroy')->name('.destroy');
+});
+
+
+Route::prefix('cart')->controller(CartController::class)->name('cart')->group(function (){
+    Route::get('/','index')->name('.index');
+
+    Route::post('/','store')->name('.store');
+
+    Route::delete('/','destroyall')->name('.destroyall');
+
+    Route::put('/{cart}','update')->name('.update');
+
+    Route::get('/show','show')->name('.show');
+
+    Route::delete('/{cart}','destroy')->name('.destroy');
+});
+
