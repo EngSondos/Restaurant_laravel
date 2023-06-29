@@ -77,9 +77,20 @@ class IngredientController extends Controller
 
         $ingredient->status = !$ingredient->status;
         foreach ($ingredient->products as $product) {
-            $product->status = $ingredient->status;;
+            foreach( $product->Ingredients as $ingredient_pro)
+            {
+                $product->status=$ingredient->status;
+
+                    if($ingredient_pro->status==0)
+                    {
+                        $product->status=0;
+                    }
+
+           }
             $product->save();
         }
+
+
         if ($ingredient->save()) {
             return $this->success("Ingredient Updated Successfully");
         } else {
