@@ -11,7 +11,7 @@ class UpdateCartRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,8 @@ class UpdateCartRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'quantity'=>'required',
+            'id'=>'required'
         ];
     }
 }

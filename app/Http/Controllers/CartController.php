@@ -62,7 +62,6 @@ class CartController extends Controller
 
         // Return a success response
         return $this->sendData('Product has been added to the cart.', $total_price_on_cart);
-
     }
 
     /**
@@ -70,7 +69,18 @@ class CartController extends Controller
      */
     public function update(UpdateCartRequest $req)
     {
+        // $data = $req->except('_method');
+        // dd($data['id']);
 
+        //check if the items can be increased
+        $cartproduct = DB::table('cart_product')->where('id','=', $req['id'])->first();
+        $product = DB::table('products')->where('id',$cartproduct->product_id)->first();
+        $productingredient = DB::table('product_ingredient')->where('product_id',$product->id)->first();
+        $ingredient = DB::table('ingredients')->where('id',$productingredient->ingredient_id)->first();
+
+        dd($ingredient);
+
+        dd($productingredient);
     }
 
     /**
@@ -91,10 +101,14 @@ class CartController extends Controller
         DB::table('cart_product')->where('cart_product.id',$cart->id)->delete();
 
         $total_price_on_cart = $this->countTotalPrice($userid);
+
         if($total_price_on_cart == 0){
+
             DB::table('carts')->where('user_id', '=', $userid)->delete();
+
             return $this->success('now the cart is totally empty');
         }
+
         $cartdata['total_price'] = $total_price_on_cart;
         
         $cartdata['updated_at'] = now();

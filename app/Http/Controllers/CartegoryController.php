@@ -17,8 +17,6 @@ use function PHPUnit\Framework\returnSelf;
 class CartegoryController extends Controller
 {
     use ApiRespone;
-
-
     /*
     ** Display All Categories
     */
@@ -34,7 +32,7 @@ class CartegoryController extends Controller
     */
     public function show(Request $req)
     {
-        $filtered = DB::table('categories')->select(['name', 'image'])->where('name', 'like', $req["name"] . '%')->orderBy('name')->get();
+        $filtered = DB::table('categories')->select(['name', 'image','id'])->where('name', 'like', $req["name"] . '%')->orderBy('name')->get();
         //check if the filtered array contains items or not
         return $filtered->first() ?
             $this->sendData('', $filtered) :
@@ -107,11 +105,7 @@ class CartegoryController extends Controller
     {
         return DB::table('categories')->
         where('status',1)->
-        select('name')->
-        get()->
-        map(function ($category) {
-            return $category->name;
-        })->
-        toArray();
+        select('name','image','id')->
+        get();
     }
 }

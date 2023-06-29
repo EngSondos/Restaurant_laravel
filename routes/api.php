@@ -114,7 +114,7 @@ Route::prefix('cart')->controller(CartController::class)->name('cart')->group(fu
 
     Route::delete('/','destroyall')->name('.destroyall');
 
-    Route::put('/{cart}','update')->name('.update');
+    Route::put('/','update')->name('.update');
 
     Route::get('/show','show')->name('.show');
 
