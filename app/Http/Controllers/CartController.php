@@ -70,17 +70,26 @@ class CartController extends Controller
     public function update(UpdateCartRequest $req)
     {
         // $data = $req->except('_method');
-        // dd($data['id']);
 
-        //check if the items can be increased
-        $cartproduct = DB::table('cart_product')->where('id','=', $req['id'])->first();
-        $product = DB::table('products')->where('id',$cartproduct->product_id)->first();
-        $productingredient = DB::table('product_ingredient')->where('product_id',$product->id)->first();
-        $ingredient = DB::table('ingredients')->where('id',$productingredient->ingredient_id)->first();
+        $cartproduct = CartProduct::with('product.ingredients')->where('id', $req['id'])->get();
 
-        dd($ingredient);
+        return CartProductResource::collection($cartproduct);
 
-        dd($productingredient);
+        // //check if the items can be increased
+        // $cartproduct = DB::table('cart_product')->where('id','=', $req['id'])->first();
+        // $product = DB::table('products')->where('id',$cartproduct->product_id)->first();
+        // $productingredient = DB::table('product_ingredient')->where('product_id',$product->id)->first();
+        // $ingredient = DB::table('ingredients')->where('id',$productingredient->ingredient_id)->first();
+
+        // dd($ingredient->quntity); // 10.00 
+
+        // dd($productingredient->quantity ); //0.4
+
+        // dd((int)$req->quantity); //2 // 26
+
+        // dd($productingredient->quantity * (int)$req->quantity);
+
+        // dd($productingredient->quantity * (int)$req->quantity > $ingredient->quntity);
     }
 
     /**

@@ -20,7 +20,7 @@ class CartProduct extends Model
 
     public function product()
     {  
-        return $this->belongsTo(Product::class,'product_id','id'); 
+        return $this->hasOne(Product::class,'id','product_id'); 
     }
 
 }
