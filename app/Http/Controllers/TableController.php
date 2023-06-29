@@ -95,6 +95,13 @@ class TableController extends Controller
         if (!$table) {
             return $this->error('Table not found.', Response::HTTP_NOT_FOUND);
         }
+        $reservations = $table->reservations;
+        
+        foreach ($reservations as $reservation) {
+            if ($reservation->status !== 'completed' && $reservation->status !== 'canceled') {
+                return $this->error('Cannot change table status: there are reservations on this table', Response::HTTP_BAD_REQUEST);
+            }
+        }
     
         $table->status = !$table->status;
         $table->save();
