@@ -29,7 +29,7 @@ class TableController extends Controller
 
     public function getAvailableTables()
 {
-    $status = 1; // only show available tables
+    $status = 1; 
 
     $tables = Table::where('status', $status)->paginate(8);
 
