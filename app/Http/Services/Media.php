@@ -1,26 +1,32 @@
 <?php
 namespace App\Http\Services;
  use Illuminate\Http\UploadedFile;
-use Illuminate\Support\Facades\Storage;
+ use Illuminate\Support\Facades\Storage;
+
+
 
 class Media {
 
     public static function upload(UploadedFile $image,string $folderName):string
     {
-       $path =  Storage::disk('images')->put($folderName,$image);
 
-         return  asset('storage/images/' . $path);
+         $newImageName = $image->hashName();
+         Storage::disk('images')->put($folderName,$image);
+         $url = Storage::url($folderName . '/' . $newImageName);
+         return $url;
+
     }
 
 
 
-    public static function delete(string $image_name,string $folderName):bool
+    public static function delete(string $path):bool
     {
 
-         if(Storage::disk('images')->delete("$folderName/$image_name")){
-            return true;
-         }
-         return false;
+     $path = str_replace('/storage', '', $path);
+     if (Storage::disk('images')->delete($path)) {
+         return true;
+     }
+     return false;
     }
 
 

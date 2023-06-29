@@ -17,13 +17,13 @@ class Product extends Model
         "extra"
     ];
 
-    public function ingredients():BelongsToMany
+    public function order()
     {
-        return $this->belongsToMany(Ingredient::class,'product_ingredient')->withPivot('quantity', 'total', 'price');
-      }
-      protected $casts = [
-        'extra' => 'array',
-    ];
+        return $this->hasMany(Order::class);
+    }
 
-
+    public function orderproduct()
+    {
+        return $this->hasMany(OrderProduct::class);
+    }
 }

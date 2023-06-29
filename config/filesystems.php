@@ -63,6 +63,17 @@ return [
             'throw' => false,
         ],
 
+     
+
+        'images' => [
+            'driver' => 'local',
+            'root' => storage_path('app/public/images'),
+            'url' => env('APP_URL').'/storage',
+            'visibility' => 'public',
+            'hashname' => true,
+
+        ],
+
     ],
 
     /*
