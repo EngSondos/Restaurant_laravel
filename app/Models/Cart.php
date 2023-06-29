@@ -13,4 +13,8 @@ class Cart extends Model
         'user_id',
         'total_price'
     ];
+    public function cartProduct()
+    {  
+        return $this->hasMany(CartProduct::class,'user_id','user_id'); //
+    }
 }

@@ -14,7 +14,9 @@ class ProductIngredient extends Model
         'product_id',
         'ingredient_id',
         'price',
-        'quntity',
+        'quantity',
         'total'
     ];
+
+
 }
