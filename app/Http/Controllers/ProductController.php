@@ -6,6 +6,7 @@ use App\Http\Requests\Product\StoreProductRequest;
 use App\Http\Requests\Product\UpdateProductIngredientRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Services\Media;
+use App\Models\Category;
 use App\Models\Product;
 
 use App\Traits\ApiRespone;
@@ -31,20 +32,47 @@ class ProductController extends Controller
         // info product info -> ingrdents[id => quntity this product need] , extra [ids]
 
         $data = $request->except('ingredients');
+       $this->checkCategory($request->category_id);
+
         $product = new Product;
         $product->name = $data['name'];
-       $image_name =  Media::upload($request->image,'products');
-        $product->image = $image_name;
-
         $product->category_id = $request->category_id;
         $product->total_price = $request->total_price;
         $product->extra=json_encode($request->extra);
+
+        $image_name =  Media::upload($request->image,'products');
+        $product->image = $image_name;
+
         $product->save();
        if(  $this->addIngredientToProduct($request,$product)){
         return $this->success('Product Add Succesfully');
        }
        return $this->error('Product Not Add Succesfully');
 
+    }
+
+    private function checkCategory(int $categoryId)
+    {
+        $category=Category::find($categoryId);
+        if(!$category->status && empty($category->products[0]))
+        {
+            $category->status =1;
+            $category->save();
+        }
+    }
+
+    private function Checkstatus($product)
+    {
+        foreach( $product->Ingredients as $ingredient_pro)
+        {
+
+                if($ingredient_pro->status==0)
+                {
+                    $product->status=0;
+                }
+                $product->save();
+
+       }
     }
 
     private function addIngredientToProduct($request,$product)
@@ -90,6 +118,7 @@ class ProductController extends Controller
             $path=  Media::upload($request->image,'products');
             $data['image']=$path;
         }
+        $this->Checkstatus($product);
        if( $product->update($data))
        {
         return $this->success('Product Update Succesfully');
@@ -104,7 +133,6 @@ class ProductController extends Controller
             return $this->success('Product Ingredients Updated Succesfully');
            }
            return $this->error('Product Ingredients Not Update Succesfully');
-
 
     }
 
