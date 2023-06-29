@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Http\Requests\User\StoreUserRequest;
 use App\Http\Requests\User\UpdateUserRequest;
 use App\Http\Requests\User\UpdateUserProfileRequest;
+use App\Http\Services\Media;
 
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Storage;
@@ -44,9 +45,8 @@ class UserController extends Controller
  
         $data = $request->except('image');
         if ($request->hasFile('image')) {
-            $path = $request->file('image')->store('users', 'users');
-            $data['image'] = $path;    
-            }
+        $data['image'] = Media::upload($request->image, 'users');
+        }
 
          if (User::create($data)){
             return $this->success('User added successfully',Response::HTTP_CREATED);
@@ -85,14 +85,17 @@ class UserController extends Controller
         if(!$user){
             return $this->error('user not Exist');
         }
-
+        
         $data = $request->except('image');
-        if ($request->hasFile('image')) {
+
+        if ($request->hasFile('image')) 
+        {
             if ($user->image) {
-                Storage::disk('users')->delete($user->image);        
+                Media::delete($user->image);        
                 }
-             $path = $request->file('image')->store('users', 'users');
-            $data['image'] = $path;
+            
+            $image = $request->file('image');
+            $data['image'] = Media::upload($image, 'users');
         }
 
        if ($user->update($data)){
@@ -117,7 +120,7 @@ class UserController extends Controller
         }
     
         if ($user->image) {
-            Storage::disk('users')->delete($user->image);
+            Media::delete($user->image);
         }
         $user->delete();
         return $this->success('User Deleted successfully',);
