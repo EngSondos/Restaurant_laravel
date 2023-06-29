@@ -21,7 +21,7 @@ class TableController extends Controller
      */
     public function index()
     {
-        $tables = Table::paginate();
+        $tables = Table::paginate(8);
         return TableResource::collection($tables)
         ->additional(['message' => 'Tables Retrieved Successfully']);
     }
@@ -31,7 +31,7 @@ class TableController extends Controller
 {
     $status = 1; // only show available tables
 
-    $tables = Table::where('status', $status)->paginate();
+    $tables = Table::where('status', $status)->paginate(8);
 
     return TableResource::collection($tables)
         ->additional(['message' => 'Available Tables Retrieved Successfully']);

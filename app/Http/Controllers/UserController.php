@@ -31,7 +31,7 @@ class UserController extends Controller
     {
 
         
-        $users = User::paginate();
+        $users = User::paginate(8);
         return UserResource::collection($users)
         ->additional(['message' => 'Users Retrieved Successfully']);
         
