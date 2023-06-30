@@ -38,5 +38,32 @@ class Product extends Model
     {
         return $this->belongsTo(Category::class,'category_id','id');
     }
+
+    public function getStatusofCategory()
+    {
+        return $this->category->status;
+    }
+
+    public function UpdateStaus()
+    {
+        if($this->getStatusofCategory())
+        {
+            foreach ($this->ingredients as $ingredient)
+            {
+                if($ingredient->status==0 || $ingredient->pivot->quantity > $ingredient->quntity)
+                {
+                    $this->status = 0 ;
+                   return $this->save();
+                }
+            }
+        }else
+        {
+            $this->status=0;
+            return $this->save();
+        }
+        $this->status=1;
+        return $this->save();
+
+    }
 }
 

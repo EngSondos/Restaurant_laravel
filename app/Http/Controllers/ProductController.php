@@ -51,28 +51,14 @@ class ProductController extends Controller
 
     }
 
-    private function checkCategory(int $categoryId)
+    protected function checkCategory(int $categoryId)
     {
         $category=Category::find($categoryId);
-        if(!$category->status && empty($category->products[0]))
+        if(!$category->status && empty($category->products[0])) // if assgin first product to ctegory make category available
         {
             $category->status =1;
             $category->save();
         }
-    }
-
-    private function Checkstatus($product)
-    {
-        foreach( $product->Ingredients as $ingredient_pro)
-        {
-
-                if($ingredient_pro->status==0)
-                {
-                    $product->status=0;
-                }
-                $product->save();
-
-       }
     }
 
     private function addIngredientToProduct($request,$product)
@@ -110,6 +96,7 @@ class ProductController extends Controller
         if(!$product){
             return $this->error('This Product Not Exist');
         }
+        $this->checkCategory($request->category_id);
 
         $data = $request->except('image');
         if($request->hasFile('image'))
@@ -118,9 +105,9 @@ class ProductController extends Controller
             $path=  Media::upload($request->image,'products');
             $data['image']=$path;
         }
-        $this->Checkstatus($product);
        if( $product->update($data))
        {
+        $product->UpdateStaus();
         return $this->success('Product Update Succesfully');
        }
 
@@ -147,8 +134,7 @@ class ProductController extends Controller
             return $this->error('This Ingredient Not Exist');
         }
 
-        $porduct->status = !$porduct->status;
-        if ($porduct->save()) {
+        if ($porduct->UpdateStaus()) {
             return $this->success("Ingredient Updated Successfully");
         } else {
             return $this->error('Ingredient Not Updated ', Response::HTTP_NOT_MODIFIED);

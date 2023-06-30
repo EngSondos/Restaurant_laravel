@@ -105,4 +105,6 @@ class CartegoryController extends Controller
             return $this->success('Category Deleted successfully',);
         }
     }
+
+  
 }
