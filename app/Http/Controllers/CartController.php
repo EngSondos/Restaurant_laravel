@@ -70,7 +70,6 @@ class CartController extends Controller
     public function update(UpdateCartRequest $req)
     {
         $userid = 1;
-        // $data = $req->except('_method');
 
         $cartproduct = CartProduct::with('product.ingredients')->where('id', $req['id'])->get();
 
@@ -92,7 +91,10 @@ class CartController extends Controller
 
             $totalpriceofallcarts = $this->countTotalPrice($userid);
 
-            return $this->sendData('product quantity increased',$cardQTY);
+            return CartProductResource::collection($cartproduct)->additional([
+                'message' => 'All Carts has been retrieved',
+                'cart_total_price' => $totalpriceofallcarts,
+            ]);
         }
 
     }
@@ -102,6 +104,7 @@ class CartController extends Controller
      */
     public function show(Request $req)
     {   
+        //waiting for response from my team
     }
 
     /**
