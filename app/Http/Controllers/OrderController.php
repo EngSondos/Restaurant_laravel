@@ -21,7 +21,7 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::paginate(8);
+        $orders = Order::with('products')->paginate(8);
         return OrderResource::collection($orders)
         ->additional(['message' => 'Orders Retrieved Successfully']);    }
 
