@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Reservation;
 use App\Models\Table;
 use App\Traits\ApiRespone;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Http;
 
 class ReservationController extends Controller
 {
@@ -37,6 +39,24 @@ class ReservationController extends Controller
         return $this->sendData('',$reservations);
     }
 
+    public function  store (Request $request)
+    {
+        //request -->>> table , date ->
+        $calculate_end_date = Carbon::parse($request->start_date)->addHours(2)->toDate()->format('Y-m-d H:i:s');
+        $end_date = $request->input('end_date',$calculate_end_date);
+
+        $reservation = new Reservation;
+        $reservation->start_date = $request->input('start_date');
+        $reservation->end_date = $end_date;
+        $reservation->table_id = $request->input('table_id');
+        $reservation->customer_id = $request->input('customer_id'); //will change by login customer
+
+        if($reservation->save())
+            return $this->success('Reservation Added Successfully');
+        return $this->error('Reservation Not Added');
+
+
+    }
 
 
 }

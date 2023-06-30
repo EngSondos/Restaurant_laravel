@@ -51,10 +51,14 @@ Route::get('reservation',[ReservationController::class ,'index']);
 Route::get('reservation/date',[ReservationController::class ,'getReservationByDate']);
 Route::get('reservation/{id}',[ReservationController::class ,'getReservationByTableId']);
 
+//reservation for user -->
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+Route::post('reservation',[ReservationController::class,'store']);
+
+
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 
 // Route::middleware('auth:sanctum')->prefix('users')->group(function(){
