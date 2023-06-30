@@ -6,6 +6,7 @@ use App\Models\Reservation;
 use App\Models\Table;
 use App\Traits\ApiRespone;
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 
@@ -59,11 +60,21 @@ class ReservationController extends Controller
     }
     public function showAvailableTimeToCustomerByTableId(Request $request)
     {
-        //table id and day which whant to reserve in it
-         dd(Reservation::where('table_id','=',$request->table_id)
-         ->
-        whereRaw('DATE(start_date) = ?', [$request->date])
-         ->get());
+        //table id and day which want to reserve in it
+         $reservations = Reservation::where('table_id','=',$request->table_id)
+         ->whereRaw('DATE(start_date) = ?', [$request->date])
+         ->get();
+         $time= [];
+         foreach($reservations as $reservation)
+         {
+            $start =new DateTime($reservation['start_date']);
+            $end =new DateTime($reservation['end_date']);
+            $time [$reservation['id']] = [$start->format('H:i:s'),$end->format('H:i:s')];
+         }
+         dd($time);
+
+
+
     }
 
     // public function
