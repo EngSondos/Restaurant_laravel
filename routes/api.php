@@ -89,6 +89,10 @@ Route::prefix('tables')->group(function(){
 Route::prefix('orders')->group(function(){
     Route::get('',[OrderController::class, 'index']);
     Route::post('',[OrderController::class, 'store']);
+    Route::get('/prepare',[OrderController::class, 'prepareOrders']);
+    Route::get('/{id}',[OrderController::class, 'show']);
+    Route::get('/prepare',[OrderController::class, 'prepareOrders']);
+
 
 });
 Route::prefix('category')->controller(CartegoryController::class)->name('category')->group(function (){

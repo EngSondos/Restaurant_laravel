@@ -67,8 +67,21 @@ class OrderController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $order=Order::with('products')->find($id);
+
+        if(!$order){
+            return $this->error('order not Exist');
+        }
+        return $this->sendData('',new OrderResource($order));  
+    
     }
+
+    public function prepareOrders()
+{
+    $orders = Order::with('products')->where('status', 'prepare')->get();
+
+    return $this->sendData('', OrderResource::collection($orders));
+}
 
     /**
      * Update the specified resource in storage.
