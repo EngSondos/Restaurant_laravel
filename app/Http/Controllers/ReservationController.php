@@ -57,6 +57,14 @@ class ReservationController extends Controller
 
 
     }
+    public function showAvailableTimeToCustomerByTableId(Request $request)
+    {
+        //table id and day which whant to reserve in it
+         dd(Reservation::where('table_id','=',$request->table_id)
+         ->whereRaw('DATE(start_date) = ?', [$request->date])
+         ->get());
+    }
 
+    // public function
 
 }

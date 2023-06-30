@@ -52,8 +52,12 @@ Route::get('reservation/date',[ReservationController::class ,'getReservationByDa
 Route::get('reservation/{id}',[ReservationController::class ,'getReservationByTableId']);
 
 //reservation for user -->
+Route::prefix('reservation')->controller(ReservationController::class)->group(function(){
+    Route::post('',[ReservationController::class,'store']);
+    Route::get('',[ReservationController::class,'showAvailableTimeToCustomerByTableId']);
 
-Route::post('reservation',[ReservationController::class,'store']);
+
+});
 
 
 // Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
