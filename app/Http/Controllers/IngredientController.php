@@ -58,9 +58,14 @@ class IngredientController extends Controller
         }
 
         $data=$request->all();
-       return $ingredient->update($data) ?
-        $this->success("Ingredient Updates Successfully") :
-       $this->error('Ingredient Not Updated '.Response::HTTP_NOT_MODIFIED);
+        $ingredient->update($data);
+        foreach ($ingredient->products as $product)
+          {
+            $product->UpdateStaus();
+          }
+
+       return $this->success("Ingredient Updates Successfully") ;
+    //    $this->error('Ingredient Not Updated '.Response::HTTP_NOT_MODIFIED);
 
     }
 
@@ -72,31 +77,19 @@ class IngredientController extends Controller
         $ingredient=Ingredient::find($id);
 
         if(!$ingredient){
-            return $this->error('This Ingredient Not Exist');
+            return $this->error('This Ingredient  Not Exist');
         }
 
         $ingredient->status = !$ingredient->status;
+        $ingredient->save();
+
         foreach ($ingredient->products as $product) {
-            foreach( $product->Ingredients as $ingredient_pro)
-            {
-                $product->status=$ingredient->status;
-
-                    if($ingredient_pro->status==0)
-                    {
-                        $product->status=0;
-                    }
-
-           }
-            $product->save();
+               $product->UpdateStaus();
+        }
+        return $this->success("Ingredient Updates Successfully") ;
         }
 
 
-        if ($ingredient->save()) {
-            return $this->success("Ingredient Updated Successfully");
-        } else {
-            return $this->error('Ingredient Not Updated ' , Response::HTTP_NOT_MODIFIED);
-        }
-    }
     public function search(Request $request)
     {
         $keyword =$request->input('keyword','');
