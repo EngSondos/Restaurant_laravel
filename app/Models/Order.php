@@ -5,6 +5,8 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Events\OrderCreated;
+
 
 
 class Order extends Model
@@ -16,6 +18,8 @@ class Order extends Model
         "total_price" , "status" , "user_id" , "table_id" , "customer_id","discount","tax","service_fee"
     ];
 
+   
+
 
     public function products()
     {
@@ -23,26 +27,6 @@ class Order extends Model
             ->withPivot(['quantity', 'total_price', 'status']);
     }
 
-    public function setTotalPriceAttribute($value)
-    {
-        $this->attributes['total_price'] = $value;
-    }
-
-    public function getTotalPriceAttribute()
-    {
-        $total = $this->attributes['total_price'];
-
-        $tax = $this->attributes['tax'];
-        $total += $total * $tax;
-
-        $serviceFee = $this->attributes['service_fee'];
-        $total += $total * $serviceFee;
-
-        $discount = $this->attributes['discount'];
-        $total -= $total * $discount;
-
-        return $total;
-    }
 
 
 

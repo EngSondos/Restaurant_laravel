@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Resources\Order\OrderResource;
+use App\Events\OrderCreated;
 
 use App\Models\Order;
+use App\Models\Product;
 use App\Traits\ApiRespone;
 use Illuminate\Http\Response;
 
@@ -34,6 +36,9 @@ class OrderController extends Controller
     public function store(StoreOrderRequest $request)
     {
         $data = $request->all();
+        $total_price = $data['total_price'] * (1 + $data['tax']) * (1 + $data['service_fee']) - ($data['discount'] ?? 0);
+        $data['total_price'] = $total_price;
+
         $order= Order::create($data);
     
         $products = $request->input('products');
@@ -45,6 +50,8 @@ class OrderController extends Controller
                 'status' => 'complete',
             ]);
         }
+        event(new OrderCreated($order));
+
 
         if ($order){
             return $this->success('order added successfully',Response::HTTP_CREATED);
@@ -53,12 +60,6 @@ class OrderController extends Controller
          return $this->error('order not added ',Response::HTTP_CONFLICT);
 
     }
-
-
-
-
-
-
 
 
     /**
