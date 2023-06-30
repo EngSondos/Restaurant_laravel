@@ -15,11 +15,12 @@ class IngredientResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'=>$this->id,
-            'name'=>$this->name,
-            'price'=> $this->price,
-            'profit' => $this->profit,
-            'quntity' => $this->quntity,
-            'status' =>$this->status
-        ];    }
+            'id'=>$this[0]->id,
+            'name'=>$this[0]->name,
+            'price'=> $this[0]->price,
+            'profit' => $this[0]->profit,
+            'quntity' => $this[0]->quntity,
+            'status' =>$this[0]->status
+        ];    
+    }
     }

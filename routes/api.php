@@ -103,6 +103,7 @@ Route::prefix('category')->controller(CartegoryController::class)->name('categor
     Route::get('/show','show')->name('.show');
 
     Route::delete('/{category}','destroy')->name('.destroy');
+
 });
 
 
@@ -113,7 +114,7 @@ Route::prefix('cart')->controller(CartController::class)->name('cart')->group(fu
 
     Route::delete('/','destroyall')->name('.destroyall');
 
-    Route::put('/{cart}','update')->name('.update');
+    Route::put('/','update')->name('.update');
 
     Route::get('/show','show')->name('.show');
 

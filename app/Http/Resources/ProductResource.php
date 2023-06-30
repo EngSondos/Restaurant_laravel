@@ -14,6 +14,7 @@ class ProductResource extends JsonResource
      */
     public function toArray(Request $request): array
     {
+        // dd($this->ingredients);
         return[
             'id' => $this->id,
             'name' => $this->name,
@@ -24,6 +25,8 @@ class ProductResource extends JsonResource
             'discount' => $this->discount,
             'extra' => $this->extra,
             'category' => new CategoryResource($this->category),
+            'ingredients' => new IngredientResource($this->ingredients),
+
         ];
     }
 }
