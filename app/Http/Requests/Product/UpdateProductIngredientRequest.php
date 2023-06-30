@@ -25,7 +25,7 @@ class UpdateProductIngredientRequest extends FormRequest
             "ingredients"=>"array|required",
             "ingredients.*.id"=>"required|exists:ingredients",
             "ingredients.*.quantity"=>"required",
-            "ingredients.*.price"=>"required",
+            "ingredients.*.total"=>"required",
         ];
     }
 }

@@ -36,7 +36,7 @@ class CartController extends Controller
     }
 
     /**
-     * 
+     * Store product in cart
      */
     public function store(StoreCartRequest $req)
     {
@@ -65,43 +65,47 @@ class CartController extends Controller
     }
 
     /**
-     * 
+     * Update card quantity
      */
     public function update(UpdateCartRequest $req)
     {
+        $userid = 1;
         // $data = $req->except('_method');
 
         $cartproduct = CartProduct::with('product.ingredients')->where('id', $req['id'])->get();
 
-        return CartProductResource::collection($cartproduct);
+        $productIngredients = $cartproduct[0]->product->ingredients;
+        
+        $product = $cartproduct[0]->product;
 
-        // //check if the items can be increased
-        // $cartproduct = DB::table('cart_product')->where('id','=', $req['id'])->first();
-        // $product = DB::table('products')->where('id',$cartproduct->product_id)->first();
-        // $productingredient = DB::table('product_ingredient')->where('product_id',$product->id)->first();
-        // $ingredient = DB::table('ingredients')->where('id',$productingredient->ingredient_id)->first();
+        $cardQTY = $req->quantity;
+        $avialability = true;
+        foreach ($productIngredients as $ingredient) {
+            $avialability = $ingredient->quntity <  $cardQTY *  $ingredient->pivot->quantity ? false : true;
+        }
+        if(!$avialability){
+            return $this->error("this product cannot be increased any more");
+        }else{
+            $cardPrice = $cardQTY * $product->total_price;
 
-        // dd($ingredient->quntity); // 10.00 
+            DB::table('cart_product')->where('id' , $req['id'])->update(['quantity' => $cardQTY,'total_price'=> $cardPrice]);
 
-        // dd($productingredient->quantity ); //0.4
+            $totalpriceofallcarts = $this->countTotalPrice($userid);
 
-        // dd((int)$req->quantity); //2 // 26
+            return $this->sendData('product quantity increased',$cardQTY);
+        }
 
-        // dd($productingredient->quantity * (int)$req->quantity);
-
-        // dd($productingredient->quantity * (int)$req->quantity > $ingredient->quntity);
     }
 
     /**
      * 
      */
     public function show(Request $req)
-    {
-        
+    {   
     }
 
     /**
-     * 
+     * Destroy card
      */
     public function destroy(CartProduct $cart)
     {
@@ -128,7 +132,7 @@ class CartController extends Controller
     }
 
     /**
-     * 
+     * Destroy all cards
      */
     public function destroyAll()
     {
@@ -142,7 +146,7 @@ class CartController extends Controller
     }
 
     /**
-     * 
+     * Count the total price of all cards
      */
     public static function countTotalPrice($user_id)
     {

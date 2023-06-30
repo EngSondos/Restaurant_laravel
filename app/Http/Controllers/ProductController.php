@@ -68,8 +68,8 @@ class ProductController extends Controller
         foreach ($request->ingredients as $ingredientData) {
             $ingredientId = $ingredientData['id'];
             $quantity = $ingredientData['quantity'];
-            $total = $ingredientData['quantity'] * $ingredientData['price'];
-            $price = $ingredientData['price'];
+            $total = $ingredientData['total'] ;
+            $price = $ingredientData['total'] / $ingredientData['quantity'];
             $ingredientsData[$ingredientId] = compact('quantity', 'total', 'price');
         }
         return  $product->ingredients()->sync($ingredientsData);
