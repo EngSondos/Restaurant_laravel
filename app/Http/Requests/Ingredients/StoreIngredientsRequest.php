@@ -24,7 +24,8 @@ class StoreIngredientsRequest extends FormRequest
         return [
             "profit"=>"required|numeric",
             "name"=>"required|string|unique:ingredients",
-            "quntity"=>"required|numeric"
+            "quntity"=>"required|numeric",
+            'price'=>'required|numeric'
         ];
     }
 }
