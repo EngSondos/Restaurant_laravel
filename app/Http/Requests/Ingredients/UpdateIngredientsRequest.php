@@ -24,9 +24,9 @@ class UpdateIngredientsRequest extends FormRequest
 
         return [
             'name' => 'required|unique:ingredients,name,'.$this->ingredient,
-            "profit"=>"required|numeric",
+            "profit"=>"required|numeric|min:0.1|max:0.99",
             "quntity"=>"required|numeric",
-            'price'=>'required|numeric'
+            'price'=>'required|numeric|min:1'
 
         ];
     }
