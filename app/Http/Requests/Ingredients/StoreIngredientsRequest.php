@@ -22,9 +22,10 @@ class StoreIngredientsRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "profit"=>"required|numeric",
+            "profit"=>"required|numeric|min:0.1|max:0.99",
             "name"=>"required|string|unique:ingredients",
-            "quntity"=>"required|numeric"
+            "quntity"=>"required|numeric|min:0.01",
+            'price'=>'required|numeric|min:1'
         ];
     }
 }

@@ -29,7 +29,7 @@ class StoreProductRequest extends FormRequest
             "ingredients"=>"array|required",
             "ingredients.*.id"=>"required|exists:ingredients",
             "ingredients.*.quantity"=>"required",
-            "ingredients.*.price"=>"required",
+            "ingredients.*.total"=>"required",
             "extra"=>"sometimes|required|array",
             "extra.*"=>"exists:ingredients,id"
 

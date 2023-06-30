@@ -21,11 +21,13 @@ class UpdateIngredientsRequest extends FormRequest
      */
     public function rules(): array
     {
-        
+
         return [
             'name' => 'required|unique:ingredients,name,'.$this->ingredient,
-            "profit"=>"required|numeric",
-            "quntity"=>"required|numeric"
+            "profit"=>"required|numeric|min:0.1|max:0.99",
+            "quntity"=>"required|numeric",
+            'price'=>'required|numeric|min:1'
+
         ];
     }
 }
