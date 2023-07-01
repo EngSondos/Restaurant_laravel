@@ -50,6 +50,7 @@ class OrderResource extends JsonResource
             'table_id' => $this->table_id,
             'user_id' => $this->user_id,
             'customer_id' => $this->customer_id,
+            'created_at'=> $this->created_at,
             'products' => $products,
             'order_products' => $order_products,
 

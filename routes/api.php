@@ -88,9 +88,8 @@ Route::prefix('tables')->group(function(){
 Route::prefix('orders')->group(function(){
     Route::get('',[OrderController::class, 'index']);
     Route::post('',[OrderController::class, 'store']);
-    Route::get('/prepare',[OrderController::class, 'prepareOrders']);
-    Route::get('/{id}',[OrderController::class, 'show']);
-    Route::get('/prepare',[OrderController::class, 'prepareOrders']);
+    Route::get('/tables/prepare',[OrderController::class, 'getTablesWithPreparedOrders']);
+    // Route::get('/{id}',[OrderController::class, 'show']);
     Route::get('tables/{id}',[OrderController::class, 'getOrderTable']);
     Route::post('/{order_id}/status/{new_status}',[OrderController::class, 'UpdateOrderStatus']);
 

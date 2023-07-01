@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Resources\Order\OrderResource;
+use App\Http\Resources\Table\TableResource;
+
 use App\Events\OrderCreated;
 
 use App\Models\Order;
@@ -60,7 +62,7 @@ class OrderController extends Controller
             $order->products()->attach($product['id'], [
                 'quantity' => $product['quantity'],
                 'total_price' => $product['total_price'],
-                'status' => 'complete',
+                'status' => 'progress',
             ]);
         
         }
@@ -79,23 +81,23 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
-    {
-        $order=Order::with('products')->find($id);
+    // public function show(string $id)
+    // {
+    //     $order=Order::with('products')->find($id);
 
-        if(!$order){
-            return $this->error('order not Exist');
-        }
-        return $this->sendData('',new OrderResource($order));  
+    //     if(!$order){
+    //         return $this->error('order not Exist');
+    //     }
+    //     return $this->sendData('',new OrderResource($order));  
     
-    }
+    // }
 
-    public function prepareOrders()
-{
-    $orders = Order::with('products')->where('status', 'prepare')->get();
+//     public function prepareOrders()
+// {
+//     $orders = Order::with('products')->where('status', 'prepare')->get();
 
-    return $this->sendData('', OrderResource::collection($orders));
-}
+//     return $this->sendData('', OrderResource::collection($orders));
+// }
 
     /**
      * Update the specified resource in storage.
@@ -112,6 +114,21 @@ class OrderController extends Controller
     {
         //
     }
+
+    public function getTablesWithPreparedOrders()
+    {
+        $tableIds = Order::where('status', '=', 'Prepare')->pluck('table_id')->unique();
+    
+        if ($tableIds->isEmpty()) {
+            return $this->error('No tables found with prepared orders');
+        }
+    
+        $tables = Table::whereIn('id', $tableIds)->get();
+    
+        return TableResource::collection($tables)
+            ->additional(['message' => 'Tables with prepared orders retrieved successfully']);
+    }
+
 
     public function getOrderTable($table_id)
     {
