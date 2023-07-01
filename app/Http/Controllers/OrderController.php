@@ -24,7 +24,8 @@ class OrderController extends Controller
      */
     public function index()
     {
-        $orders = Order::with('products')->paginate(8);
+        $orders = Order::whereNotIn('status',['served','paid'])
+        ->with('products')->paginate(8);
         return OrderResource::collection($orders)
         ->additional(['message' => 'Orders Retrieved Successfully']);  
     
@@ -122,4 +123,21 @@ class OrderController extends Controller
         return OrderResource::collection($prepareOrders)
             ->additional(['message' => 'Prepared orders for table '.$table_id.' retrieved successfully']);
     }
+
+
+        public function UpdateOrderStatus(int $order_id,string $new_status)
+        {
+            try{
+                $order = Order::findOrFail($order_id);
+                } catch (ModelNotFoundException $exception){
+                    return $this->error('Order not found', Response::HTTP_NOT_FOUND);
+                }
+                $valid_statuses = ['Pending', 'Accepted', 'Prepare', 'Complete', 'Served', 'Canceled', 'Paid'];
+                if (!in_array($new_status, $valid_statuses)) {
+                    return response()->json(['message' => 'Invalid status'], Response::HTTP_BAD_REQUEST);
+                }
+                $order->update(['status'=>$new_status]);
+                return $this->success('Order status updated successfully');
+        }
+
 }
