@@ -27,7 +27,9 @@ class UpdateProductRequest extends FormRequest
             "description"=>"nullable|string",
             "category_id"=>"required|exists:categories,id",
             "extra"=>"sometimes|required|array",
-            "extra.*"=>"exists:ingredients,id"
+            "extra.*"=>"exists:ingredients,id",
+            'image'  => 'sometimes|max:1000|mimes:jpg,png,jpeg,gif|image',
+            'discount'=>'sometimes|numeric|min:0.01|max:0.99'
         ];
     }
 }

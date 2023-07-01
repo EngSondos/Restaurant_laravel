@@ -22,17 +22,18 @@ class StoreProductRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "name"=>"required|string",
-            "total_price"=>"required",
+            "name"=>"required|string|unique:products,name",
+            "total_price"=>"required|numeric",
             "description"=>"nullable|string",
             "category_id"=>"required|exists:categories,id",
             "ingredients"=>"array|required",
             "ingredients.*.id"=>"required|exists:ingredients",
             "ingredients.*.quantity"=>"required",
             "ingredients.*.total"=>"required",
-            "extra"=>"sometimes|required|array",
-            "extra.*"=>"exists:ingredients,id"
-
+            "extra"=>"sometimes|array",
+            "extra.*"=>"exists:ingredients,id",
+            'image'  => 'required|max:1000|mimes:jpg,png,jpeg,gif|image',
+            'discount'=>'sometimes|numeric|min:0.01|max:0.99'
                 ];
     }
 }
