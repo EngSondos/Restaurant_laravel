@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Http;
 class ReservationController extends Controller
 {
     use ApiRespone;
+    const SHIFT_BEGIN = new DateTime('');
     public function index()
     {
         $reservations =  Reservation::with('table')->paginate(8);
@@ -48,7 +49,10 @@ class ReservationController extends Controller
 
         $reservation = new Reservation;
         $reservation->start_date = $request->input('start_date');
+        
         $reservation->end_date = $end_date;
+        //check in range
+
         $reservation->table_id = $request->input('table_id');
         $reservation->customer_id = $request->input('customer_id'); //will change by login customer
 
@@ -62,21 +66,34 @@ class ReservationController extends Controller
     {
         //table id and day which want to reserve in it
          $reservations = Reservation::where('table_id','=',$request->table_id)
-         ->whereRaw('DATE(start_date) = ?', [$request->date])
+         ->whereRaw('DATE(start_date) = ?', [$request->date])->orderBy('start_date')
          ->get();
-         $time= [];
-         foreach($reservations as $reservation)
+         $times= [];
+         foreach($reservations as $index => $reservation)
          {
             $start =new DateTime($reservation['start_date']);
             $end =new DateTime($reservation['end_date']);
-            $time [$reservation['id']] = [$start->format('H:i:s'),$end->format('H:i:s')];
+            $times [$reservation['id']] = [$start->format('H:i:s'),$end->format('H:i:s')];
          }
-         dd($time);
+        $free_time=[];
+         foreach($times as $index => $time)
+         {
+            if( substr($times[$index+1][0],0,2)-substr($time[1],0,2)>=2)
+            {
+                $free_time[$index] =[$time[1],$times[$index+1][0]];
+            }
+         }
+         dd($free_time);
+
 
 
 
     }
 
-    // public function
+    public function getReservationByCustomerId($customer_id)
+    {
+        $reservtions =  Reservation::where('customer_id','=',$customer_id)->get();
+        return $this->sendData('',$reservtions);
+    }
 
 }
