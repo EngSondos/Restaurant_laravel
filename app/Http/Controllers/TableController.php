@@ -7,7 +7,6 @@ use App\Models\Table;
 use App\Http\Requests\Table\StoreTableRequest;
 use App\Http\Requests\Table\UpdateTableRequest;
 use App\Http\Resources\Table\TableResource;
-use App\Http\Resources\Order\OrderResource;
 use Illuminate\Http\Response;
 use App\Traits\ApiRespone;
 
@@ -112,21 +111,4 @@ class TableController extends Controller
 
 
 
-//     public function getOrderTable(int $id)
-// {
-//     $table = Table::findOrFail($id);
-
-//     if (!$table) {
-//         return $this->error('Table not found', Response::HTTP_NOT_FOUND);
-//     }
-
-//     $orders = $table->orders()->with('products')->get();
-
-//     if (!$orders) {
-//         return $this->error('No orders found for this table');
-//     }
-
-//     return OrderResource::collection($orders)
-//         ->additional(['message' => 'Orders retrieved successfully']);
-// }
 }

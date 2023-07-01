@@ -24,9 +24,9 @@ class StoreOrderRequest extends FormRequest
             return [
                 'total_price' => 'required|numeric|min:0',
                 'discount' => 'nullable|numeric',
-                'tax'=> 'required|numeric|max:1',
+                'tax'=> 'sometimes|numeric|max:1',
                 'payment_method' => 'nullable|in:CASH,VISA',
-                'service_fee' => 'required|numeric|max:1',
+                'service_fee' => 'sometimes|numeric|max:1',
                 'status' => 'required|in:Pending,Accepted,Prepare,Complete,Served,Canceled,Paid',
                 'table_id' => 'required|exists:tables,id',
                 'user_id' => 'required|exists:users,id',

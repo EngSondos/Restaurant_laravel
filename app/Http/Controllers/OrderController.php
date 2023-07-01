@@ -9,6 +9,7 @@ use App\Events\OrderCreated;
 
 use App\Models\Order;
 use App\Models\Table;
+use App\Http\Services\Media;
 
 use App\Models\Product;
 use App\Traits\ApiRespone;
@@ -42,19 +43,26 @@ class OrderController extends Controller
     public function store(StoreOrderRequest $request)
     {
         $data = $request->all();
-        $total_price = $data['total_price'] * (1 + $data['tax']) * (1 + $data['service_fee']) - ($data['discount'] ?? 0);
+        $tax = isset($data['tax']) ? $data['tax'] : 0.14;
+       $service_fee = isset($data['service_fee']) ? $data['service_fee'] : 0.12;
+
+        $total_price = $request->input('total_price') * (1 + $tax) * (1 + $service_fee) - ($data['discount'] ?? 0);
         $data['total_price'] = $total_price;
 
+    
         $order= Order::create($data);
+    
     
         $products = $request->input('products');
     
         foreach ($products as $product) {
+         
             $order->products()->attach($product['id'], [
                 'quantity' => $product['quantity'],
                 'total_price' => $product['total_price'],
                 'status' => 'complete',
             ]);
+        
         }
         event(new OrderCreated($order));
 

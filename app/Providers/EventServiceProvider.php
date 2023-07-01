@@ -8,6 +8,8 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use Illuminate\Support\Facades\Event;
 use App\Events\OrderCreated;
 use App\Listeners\UpdateIngredientQuantities;
+use App\Listeners\insertOrderProductImage;
+
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -23,6 +25,8 @@ class EventServiceProvider extends ServiceProvider
 
         OrderCreated::class => [
             UpdateIngredientQuantities::class,
+            insertOrderProductImage::class
+
         ],
     ];
 

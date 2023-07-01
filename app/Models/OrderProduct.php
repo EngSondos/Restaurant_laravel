@@ -12,7 +12,7 @@ class OrderProduct extends Model
     use HasFactory,SoftDeletes;
     protected $table = 'order_product';
     protected $fillable = [
-        "total_price" , "quantity" , "order_id" , "product_id"
+        "total_price" , "quantity" , "order_id" , "product_id","image"
     ];
     public function order()
     {
