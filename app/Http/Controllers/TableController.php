@@ -112,21 +112,21 @@ class TableController extends Controller
 
 
 
-    public function getOrders(int $id)
-{
-    $table = Table::findOrFail($id);
+//     public function getOrderTable(int $id)
+// {
+//     $table = Table::findOrFail($id);
 
-    if (!$table) {
-        return $this->error('Table not found', Response::HTTP_NOT_FOUND);
-    }
+//     if (!$table) {
+//         return $this->error('Table not found', Response::HTTP_NOT_FOUND);
+//     }
 
-    $orders = $table->orders;
+//     $orders = $table->orders()->with('products')->get();
 
-    if (!$orders) {
-        return $this->error('No orders found for this table');
-    }
+//     if (!$orders) {
+//         return $this->error('No orders found for this table');
+//     }
 
-    return OrderResource::collection($orders)
-        ->additional(['message' => 'Orders retrieved successfully']);
-}
+//     return OrderResource::collection($orders)
+//         ->additional(['message' => 'Orders retrieved successfully']);
+// }
 }

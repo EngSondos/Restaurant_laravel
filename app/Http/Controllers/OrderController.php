@@ -8,8 +8,11 @@ use App\Http\Resources\Order\OrderResource;
 use App\Events\OrderCreated;
 
 use App\Models\Order;
+use App\Models\Table;
+
 use App\Models\Product;
 use App\Traits\ApiRespone;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Response;
 
 
@@ -23,7 +26,9 @@ class OrderController extends Controller
     {
         $orders = Order::with('products')->paginate(8);
         return OrderResource::collection($orders)
-        ->additional(['message' => 'Orders Retrieved Successfully']);    }
+        ->additional(['message' => 'Orders Retrieved Successfully']);  
+    
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -97,5 +102,24 @@ class OrderController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function getOrderTable($table_id)
+    {
+
+        try{
+        $table = Table::findOrFail($table_id);
+        } catch (ModelNotFoundException $exception){
+            return $this->error('Table not found', Response::HTTP_NOT_FOUND);
+        }
+    
+        $prepareOrders = Order::where('table_id', '=', $table_id)->where('status','=','Prepare')->with('products')->get();
+    
+        if ($prepareOrders->isEmpty()) {
+            return $this->error('No prepared orders found for this table');
+        }
+    
+        return OrderResource::collection($prepareOrders)
+            ->additional(['message' => 'Prepared orders for table '.$table_id.' retrieved successfully']);
     }
 }

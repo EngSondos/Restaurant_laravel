@@ -30,7 +30,7 @@ class StoreOrderRequest extends FormRequest
                 'status' => 'required|in:Pending,Accepted,Prepare,Complete,Served,Canceled,Paid',
                 'table_id' => 'required|exists:tables,id',
                 'user_id' => 'required|exists:users,id',
-                'customer_id' => 'required|exists:customers,id',
+                'customer_id' => 'somtimes|exists:customers,id',
                 
             ];       
     }
