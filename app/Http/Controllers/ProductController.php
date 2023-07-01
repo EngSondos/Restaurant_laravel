@@ -40,6 +40,8 @@ class ProductController extends Controller
         $product->total_price = $request->total_price;
         $product->extra=json_encode($request->extra);
         $product->discount = $request->input('discount',null);
+        $product->description = $request->input('description',null);
+
         $image_name =  Media::upload($request->image,'products');
         $product->image = $image_name;
 
