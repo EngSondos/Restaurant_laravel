@@ -24,7 +24,7 @@ class CartController extends Controller
 
         $carts = Cart::where('user_id', $user_id)->first();
 
-        if(!$carts){
+        if(!$carts) {
             return $this->success('no cards to be showen');
         }
         $cart = $carts->cartProduct()->with('product.category')->paginate(8);
@@ -45,7 +45,7 @@ class CartController extends Controller
         if (DB::table('cart_product')->where('product_id', '=', $req['product_id'], 'and', 'user_id', '=', $userid)->exists()) {
             return $this->error('this product is already in the cart');
         }
-         // Get the product information
+        // Get the product information
         $product = Product::findOrFail($req['product_id']);
 
         // Create a new cart item
@@ -71,39 +71,41 @@ class CartController extends Controller
     {
         $userid = 1;
 
-        $cartproduct = CartProduct::with('product.ingredients')->where('id', $req['id'])->get();
+        $cartproduct = CartProduct::with('product.ingredients')->where('id', $req['id'])->first();
 
-        $productIngredients = $cartproduct[0]->product->ingredients;
+        $productIngredients = $cartproduct->product->ingredients;
         
-        $product = $cartproduct[0]->product;
+        $product = $cartproduct->product;
 
         $cardQTY = $req->quantity;
+
         $avialability = true;
+
         foreach ($productIngredients as $ingredient) {
             $avialability = $ingredient->quntity <  $cardQTY *  $ingredient->pivot->quantity ? false : true;
         }
-        if(!$avialability){
+
+        if (!$avialability) {
             return $this->error("this product cannot be increased any more");
-        }else{
-            $cardPrice = $cardQTY * $product->total_price;
-
-            DB::table('cart_product')->where('id' , $req['id'])->update(['quantity' => $cardQTY,'total_price'=> $cardPrice]);
-
-            $totalpriceofallcarts = $this->countTotalPrice($userid);
-
-            return CartProductResource::collection($cartproduct)->additional([
-                'message' => 'All Carts has been retrieved',
-                'cart_total_price' => $totalpriceofallcarts,
-            ]);
         }
 
+        $cardPrice = $cardQTY * $product->total_price;
+
+        DB::table('cart_product')->where('id', $req['id'])->update(['quantity' => $cardQTY, 'total_price' => $cardPrice]);
+
+        $totalpriceofallcarts = $this->countTotalPrice($userid);
+
+        return CartProductResource::collection([$cartproduct])->additional([
+            'message' => 'All Carts has been retrieved',
+            'cart_total_price' => $totalpriceofallcarts,
+        ]);
     }
 
     /**
      * 
      */
     public function show(Request $req)
-    {   
+    {
         //waiting for response from my team
     }
 
@@ -113,12 +115,12 @@ class CartController extends Controller
     public function destroy(CartProduct $cart)
     {
         $userid = 1;
-        
-        DB::table('cart_product')->where('cart_product.id',$cart->id)->delete();
+
+        DB::table('cart_product')->where('cart_product.id', $cart->id)->delete();
 
         $total_price_on_cart = $this->countTotalPrice($userid);
 
-        if($total_price_on_cart == 0){
+        if ($total_price_on_cart == 0) {
 
             DB::table('carts')->where('user_id', '=', $userid)->delete();
 
@@ -126,12 +128,12 @@ class CartController extends Controller
         }
 
         $cartdata['total_price'] = $total_price_on_cart;
-        
+
         $cartdata['updated_at'] = now();
 
         DB::table('carts')->where('user_id', '=', $userid)->update($cartdata);
 
-        return $this->sendData('',['total_price' =>$total_price_on_cart]);
+        return $this->sendData('', ['total_price' => $total_price_on_cart]);
     }
 
     /**
@@ -141,10 +143,10 @@ class CartController extends Controller
     {
         $userid = 1;
 
-        DB::table('cart_product')->where('cart_product.user_id',$userid)->delete();
+        DB::table('cart_product')->where('cart_product.user_id', $userid)->delete();
 
         DB::table('carts')->where('user_id', '=', $userid)->delete();
-            
+
         return $this->success('now the cart is totally empty');
     }
 
@@ -156,10 +158,9 @@ class CartController extends Controller
         //get all products belong to specific user then sum all prices of all choosed products
         $totalprice = DB::table('cart_product')->where('user_id', $user_id)
             ->sum('total_price');
-        if(Cart::where('user_id', $user_id)->exists())
-        {
-            DB::table('carts')->where('user_id',$user_id)->update(['total_price' => $totalprice , 'updated_at' => now()]);
-        }else{
+        if (Cart::where('user_id', $user_id)->exists()) {
+            DB::table('carts')->where('user_id', $user_id)->update(['total_price' => $totalprice, 'updated_at' => now()]);
+        } else {
 
             $cartdata['total_price'] = $totalprice;
 
