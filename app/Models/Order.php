@@ -18,7 +18,10 @@ class Order extends Model
         "total_price" , "status" , "user_id" , "table_id" , "customer_id","discount","tax","service_fee"
     ];
 
-   
+    protected $attributes = [
+        'total_price' => 0,
+        // other default attribute values...
+    ];
 
 
     public function products()
