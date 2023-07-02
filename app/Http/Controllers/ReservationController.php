@@ -105,4 +105,36 @@ class ReservationController extends Controller
         return $this->sendData('',$reservtions);
     }
 
+    public function cancelReservation(int $id)
+    {
+      $reservation =   Reservation::find($id);
+      if(!$reservation)
+      {
+        return $this->error('Reservation Not Exits');
+      }
+      $reservation->status="canceled";
+
+     if( $reservation->save())
+     {
+        return $this->success('Reservation Canceled');
+     }
+     return $this->error('Some Thing Wrong');
+    }
+
+    public function AcceptReservation(int $id)
+    {
+      $reservation =   Reservation::find($id);
+      if(!$reservation)
+      {
+        return $this->error('Reservation Not Exits');
+      }
+      $reservation->status="accepted";
+
+     if( $reservation->save())
+     {
+        return $this->success('Reservation Accepted');
+     }
+     return $this->error('Some Thing Wrong');
+    }
+
 }
