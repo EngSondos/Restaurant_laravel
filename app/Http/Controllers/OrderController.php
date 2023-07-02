@@ -81,16 +81,16 @@ class OrderController extends Controller
     /**
      * Display the specified resource.
      */
-    // public function show(string $id)
-    // {
-    //     $order=Order::with('products')->find($id);
+    public function show(string $id)
+    {
+        $order=Order::with('products')->find($id);
 
-    //     if(!$order){
-    //         return $this->error('order not Exist');
-    //     }
-    //     return $this->sendData('',new OrderResource($order));  
+        if(!$order){
+            return $this->error('order not Exist');
+        }
+        return $this->sendData('',new OrderResource($order));  
     
-    // }
+    }
 
 //     public function prepareOrders()
 // {
