@@ -134,7 +134,20 @@ class UserController extends Controller
     }
         
 
+/**
+ * Search for users by name.
+ */
+public function search(Request $request)
+{
+    $name = $request->query('name');
+    $users = User::where('name', 'like', '%'.$name.'%')->paginate(8);
 
+    if ($users->isEmpty()){
+        return $this->error('No users found with this name',Response::HTTP_NOT_FOUND);
+    }
+    return UserResource::collection($users)
+        ->additional(['message' => 'Users Retrieved Successfully']);
+}
 
 
 }

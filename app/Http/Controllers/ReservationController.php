@@ -18,7 +18,7 @@ class ReservationController extends Controller
     // const SHIFT_BEGIN = new DateTime('');
     public function index()
     {
-        $reservations =  Reservation::with('table')->paginate(8);
+        $reservations =  Reservation::with(['table','customer'])->paginate(8);
         // dd($reservations);
         return $this->sendData('',$reservations);
     }
@@ -31,21 +31,22 @@ class ReservationController extends Controller
         return $this->error('This Table Not Exist');
 
      }
-     $reservations =   Reservation::where('table_id','=',$table_id)->get();
+     $reservations =   Reservation::with(['table','customer'])->where('table_id','=',$table_id)->get();
 
      return $this->sendData('',$reservations);
     }
 
     public function getReservationByDate(Request $request)
     {
-        $reservations = Reservation::with('table')->whereBetween('start_date', [$request->start_date, $request->end_date])->get();
+        //5 pm to 7 pm
+        $reservations = Reservation::with(['table','customer'])->whereBetween('start_date', [$request->start_date, $request->end_date])->get();
         return $this->sendData('',$reservations);
     }
 //customers function -->
     public function  store (Request $request)
     {
         //request -->>> table , date ->
-        //validation for date -> not in database same day 
+        //validation for date -> not in database same day
         //validation for time start must be after now and
 
         $reservation = new Reservation;

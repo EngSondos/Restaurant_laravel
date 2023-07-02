@@ -4,13 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Cart\StoreCartRequest;
 use App\Http\Requests\Cart\UpdateCartRequest;
-use App\Http\Resources\CartProductResource;
 use App\Models\Cart;
 use App\Models\CartProduct;
 use App\Models\Product;
 use App\Traits\ApiRespone;
-use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
@@ -27,12 +27,10 @@ class CartController extends Controller
         if(!$carts) {
             return $this->success('no cards to be showen');
         }
-        $cart = $carts->cartProduct()->with('product.category')->paginate(8);
 
-        return CartProductResource::collection($cart)->additional([
-            'message' => 'All Carts has been retrieved',
-            'cart_total_price' => $carts->total_price,
-        ]);
+        $cart = $carts->cartProduct()->with('product.ingredients')->paginate(8);
+
+        return $this->sendData('All Carts has been retrieved',[$cart,'cart_total_price' => $carts->total_price]);
     }
 
     /**
@@ -70,84 +68,70 @@ class CartController extends Controller
     public function update(UpdateCartRequest $req)
     {
         $userid = 1;
-
-        $cartproduct = CartProduct::with('product.ingredients')->where('id', $req['id'])->first();
-
+        //get the card that the user interact with 
+        $cartproduct = CartProduct::with('product.ingredients')->findOrFail( $req['id']);
+        //get the ingredients of this product
         $productIngredients = $cartproduct->product->ingredients;
-        
-        $product = $cartproduct->product;
-
+        //recieve the quantity of the product that user need 
         $cardQTY = $req->quantity;
-
-        $avialability = true;
-
+        //check if the user try to decrement the quantity to 0 or less and send to him error message
+        if($cardQTY < 1)
+        {
+            return $this->error('The quantity can not be decremented less than 1');
+        }
+        //loop in the ingredients to check if this ingredients still exist in the stoke with this demand quantity
         foreach ($productIngredients as $ingredient) {
-            $avialability = $ingredient->quntity <  $cardQTY *  $ingredient->pivot->quantity ? false : true;
+            //if not so send error message to the user that this product cannot increment more
+            if ($ingredient->quntity <  $cardQTY *  $ingredient->pivot->quantity) 
+                return $this->error("This product cannot be increased any more");
         }
-
-        if (!$avialability) {
-            return $this->error("this product cannot be increased any more");
-        }
-
-        $cardPrice = $cardQTY * $product->total_price;
-
-        DB::table('cart_product')->where('id', $req['id'])->update(['quantity' => $cardQTY, 'total_price' => $cardPrice]);
-
-        $totalpriceofallcarts = $this->countTotalPrice($userid);
-
-        return CartProductResource::collection([$cartproduct])->additional([
-            'message' => 'All Carts has been retrieved',
-            'cart_total_price' => $totalpriceofallcarts,
+        //else this quantity is avialable so update the quantity in the cartproduct table and the price of this product
+        $cartproduct->update([
+            'quantity' => $cardQTY, 
+            'total_price' => $cardQTY * $cartproduct->product->total_price
         ]);
+        //count the total price of all demand products 
+        $this->countTotalPrice($userid);
+        //send success message to the user tell him that the cart product quantity has been updated
+        return $this->success('The quantity has been updated');
+        
     }
 
     /**
-     * 
+     * Destroy one card or all cards
      */
-    public function show(Request $req)
-    {
-        //waiting for response from my team
-    }
-
-    /**
-     * Destroy card
-     */
-    public function destroy(CartProduct $cart)
+    public function destroy(Request $request)
     {
         $userid = 1;
+        if($request['id']){
+            $cart_product =  DB::table('cart_product')->where('id',$request['id'])->exists();
+            if(!$cart_product){
+                return $this->error("This Product Doesn't Exist In The Cart");
+            }
+            DB::table('cart_product')->where('cart_product.id', $request['id'])->delete();
 
-        DB::table('cart_product')->where('cart_product.id', $cart->id)->delete();
+            $total_price_on_cart = $this->countTotalPrice($userid);
 
-        $total_price_on_cart = $this->countTotalPrice($userid);
+            if ($total_price_on_cart == 0) {
 
-        if ($total_price_on_cart == 0) {
+                DB::table('carts')->where('user_id', '=', $userid)->delete();
 
-            DB::table('carts')->where('user_id', '=', $userid)->delete();
+                return $this->success('No Products In The Cart');
+            }
 
-            return $this->success('now the cart is totally empty');
+            DB::table('carts')->where('user_id', '=', $userid)->update([
+                'total_price'=>$total_price_on_cart,
+                'updated_at' => now()
+            ]);
+
+            return $this->success('Product Deleted Successfully From Cart');
         }
-
-        $cartdata['total_price'] = $total_price_on_cart;
-
-        $cartdata['updated_at'] = now();
-
-        DB::table('carts')->where('user_id', '=', $userid)->update($cartdata);
-
-        return $this->sendData('', ['total_price' => $total_price_on_cart]);
-    }
-
-    /**
-     * Destroy all cards
-     */
-    public function destroyAll()
-    {
-        $userid = 1;
-
         DB::table('cart_product')->where('cart_product.user_id', $userid)->delete();
 
         DB::table('carts')->where('user_id', '=', $userid)->delete();
 
-        return $this->success('now the cart is totally empty');
+        return $this->success('No Products In The Cart');
+        
     }
 
     /**
@@ -161,14 +145,11 @@ class CartController extends Controller
         if (Cart::where('user_id', $user_id)->exists()) {
             DB::table('carts')->where('user_id', $user_id)->update(['total_price' => $totalprice, 'updated_at' => now()]);
         } else {
-
-            $cartdata['total_price'] = $totalprice;
-
-            $cartdata['user_id'] = $user_id;
-
-            $cartdata['created_at'] = now();
-
-            DB::table('carts')->insert($cartdata);
+            Cart::insert([
+                'total_price' => $totalprice,
+                'user_id' => $user_id,
+                'created_at' => now()
+            ]);
         }
         return $totalprice;
     }

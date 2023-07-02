@@ -20,7 +20,6 @@ class Reservation extends Model
     {
         return $this->belongsTo(Table::class);
     }
-
     public function customer():BelongsTo
     {
         return $this->belongsTo(Customer::class);
