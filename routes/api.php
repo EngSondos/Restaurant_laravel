@@ -52,14 +52,11 @@ Route::controller(ProductController::class)->group(function(){
     Route::put('product/update/ingredients/{product}','updateIngredientsForProduct');
 });
 //reservation for user -->
-Route::prefix('reservation')->controller(ReservationController::class)->group(function(){
-    Route::post('',[ReservationController::class,'store']);
+    Route::post('reservation',[ReservationController::class,'store']);
     Route::get('/date/{table_id}',[ReservationController::class,'getAvailableDateByTableId']);
-
+    
     Route::get('search/product','search');
-
     Route::get('active/product','getActiveProducts');
-});
 
 //Reservation API
 Route::prefix('reservation')->controller(ReservationController::class)->group(function(){

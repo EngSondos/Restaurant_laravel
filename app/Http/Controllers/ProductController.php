@@ -162,11 +162,12 @@ class ProductController extends Controller
         if (!$porduct) {
             return $this->error('This Ingredient Not Exist');
         }
-
+        $porduct->closed=!$porduct->closed;
+        $porduct->save();
         if ($porduct->UpdateStaus()) {
-            return $this->success("Ingredient Updated Successfully");
+            return $this->success("Product Updated Successfully");
         } else {
-            return $this->error('Ingredient Not Updated ', Response::HTTP_NOT_MODIFIED);
+            return $this->error('Product Not Updated ', Response::HTTP_NOT_MODIFIED);
         }
     }
 
