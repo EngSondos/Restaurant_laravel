@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Reservation\GetByDateRequest;
+use App\Http\Requests\Reservation\StoreReservationRequest;
 use App\Http\Resources\Table\TableResource;
 use App\Models\Reservation;
 use App\Models\Table;
@@ -15,7 +17,6 @@ use Illuminate\Support\Facades\Http;
 class ReservationController extends Controller
 {
     use ApiRespone;
-    // const SHIFT_BEGIN = new DateTime('');
     public function index()
     {
         $reservations =  Reservation::with(['table','customer'])->paginate(8);
@@ -36,14 +37,14 @@ class ReservationController extends Controller
      return $this->sendData('',$reservations);
     }
 
-    public function getReservationByDate(Request $request)
+    public function getReservationByDate(GetByDateRequest $request)
     {
         //5 pm to 7 pm
         $reservations = Reservation::with(['table','customer'])->whereBetween('start_date', [$request->start_date, $request->end_date])->get();
         return $this->sendData('',$reservations);
     }
 //customers function -->
-    public function  store (Request $request)
+    public function  store (StoreReservationRequest $request)
     {
         //request -->>> table , date ->
         //validation for date -> not in database same day
