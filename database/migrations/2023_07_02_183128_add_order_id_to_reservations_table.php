@@ -12,7 +12,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('reservations', function (Blueprint $table) {
-            $table->foreignId('order_id')->constrained()->nullable();
+            $table->unsignedBigInteger('order_id')->nullable();
+            $table->foreign('order_id')->on('orders')->references('id');
         });
     }
 

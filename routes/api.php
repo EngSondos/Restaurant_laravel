@@ -37,7 +37,7 @@ use App\Http\Controllers\OrderController;
 //Ingrdents API Methods
 Route::apiResource('ingredients',IngredientController::class)->except('destroy');
 Route::controller(IngredientController::class)->group(function(){
-    Route::get('ingredients/status/{id}','changeStatus');
+    Route::get('ingredients/status/{id}','changeClosed');
 
     Route::get('search/ingredient','search');
 
@@ -46,45 +46,41 @@ Route::controller(IngredientController::class)->group(function(){
 
 //Products API Methods
 Route::apiResource('products',ProductController::class)->except('destroy');
+
 Route::controller(ProductController::class)->group(function(){
     Route::get('products/status/{id}','changeStatus');
 
     Route::put('product/update/ingredients/{product}','updateIngredientsForProduct');
-});
-//reservation for user -->
-    Route::post('reservation',[ReservationController::class,'store']);
-    Route::get('/date/{table_id}',[ReservationController::class,'getAvailableDateByTableId']);
-    
+
     Route::get('search/product','search');
+
     Route::get('active/product','getActiveProducts');
+});
+
+
+
+
+
+
 
 //Reservation API
 Route::prefix('reservation')->controller(ReservationController::class)->group(function(){
+    //reservation for user -->
+    Route::post('','store');
+    Route::get('/date/{table_id}','getAvailableDateByTableId');
+
+    //for admin
     Route::get('','index');
 
     Route::get('/date','getReservationByDate');
 
     Route::get('/{id}','getReservationByTableId');
 
-    //cancel reservation -->
+    //cancel reservation --> cashair
     Route::put('/status/cancel/{id}','cancelReservation');
     Route::put('/status/accept/{id}','AcceptReservation');
 
 });
-
-
-
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
-
-
-// Route::middleware('auth:sanctum')->prefix('users')->group(function(){
-//     Route::get('/auth','UserDetails');
-
-// });
-
-
 
 //Users API Methods For Admin
 Route::prefix('users')->controller(UserController::class)->group(function(){
