@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\TableController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\OrderProductController;
+
 
 
 
@@ -128,6 +130,18 @@ Route::prefix('orders')->controller(OrderController::class)->group(function(){
     
     Route::post('/{order_id}/status/{new_status}','UpdateOrderStatus');
 });
+
+Route::prefix('order_products')->controller(OrderProductController::class)->group(function(){
+
+    Route::put('{orderId}','cancelOrderProducts');
+    Route::put('{orderId}','completeOrderProducts');
+
+
+
+});
+
+
+
 
 //Categories API Methods For Admin
 Route::prefix('category')->controller(CartegoryController::class)->group(function (){
