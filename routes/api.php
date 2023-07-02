@@ -75,19 +75,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // });
 
-Route::prefix('users')->group(function(){
-    Route::get('',[UserController::class, 'index']);
-    Route::post('',[UserController::class, 'store']);
-    Route::get('/search',[UserController::class, 'search']);
-    Route::get('/{id}',[UserController::class, 'show']);
-    Route::put('/{id}',[UserController::class, 'update']);
-    Route::delete('/{id}',[UserController::class, 'destroy']);
 
-});
 
 //Users API Methods For Admin
 Route::prefix('users')->controller(UserController::class)->group(function(){
     Route::get('','index');
+
+    Route::get('/search','search');
 
     Route::post('','store');
 
@@ -113,7 +107,8 @@ Route::prefix('tables')->controller(TableController::class)->group(function(){
 
     Route::get('status/{id}','changeStatus');
 
-    Route::get('available','getAvailableTables');
+    Route::get('available/inday','availbeTablesInTheDay');
+
 });
 
 //Orders API Methods For Waiter
