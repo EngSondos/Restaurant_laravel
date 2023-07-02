@@ -7,6 +7,7 @@ use App\Http\Requests\Product\UpdateProductIngredientRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Services\Media;
 use App\Models\Category;
+use App\Models\Ingredient;
 use App\Models\Product;
 
 use App\Traits\ApiRespone;
@@ -54,29 +55,7 @@ class ProductController extends Controller
 
     }
 
-    protected function checkCategory(int $categoryId)
-    {
-        $category=Category::find($categoryId);
-        if(!$category->status && empty($category->products[0])) // if assgin first product to ctegory make category available
-        {
-            $category->status =1;
-            $category->save();
-        }
-    }
 
-    private function addIngredientToProduct($request,$product)
-    {
-
-        $ingredientsData = [];
-        foreach ($request->ingredients as $ingredientData) {
-            $ingredientId = $ingredientData['id'];
-            $quantity = $ingredientData['quantity'];
-            $total = $ingredientData['total'] ;
-            $price = $ingredientData['total'] / $ingredientData['quantity'];
-            $ingredientsData[$ingredientId] = compact('quantity', 'total', 'price');
-        }
-        return  $product->ingredients()->sync($ingredientsData);
-    }
 
     /**
      * Display the specified resource.
@@ -84,6 +63,19 @@ class ProductController extends Controller
     public function show(int $id)
     {
         $product = Product::with('ingredients')->find($id);
+
+
+        if( $product->extra)
+        {
+            $extras= [];
+            foreach($product->extra as $extra){
+               $extras[$extra]= Ingredient::where('id',$extra)->get('name');
+            }
+            // dd($extras);
+            $product->extra = $extras;
+        }
+
+
         if(!$product){
             return $this->error('This Product Not Exist');
         }
@@ -116,6 +108,40 @@ class ProductController extends Controller
 
     }
 
+    public function search(Request $request)
+    {
+        $keyword =$request->input('keyword','');
+        return $this->sendData('',Product::where('name','like',"%$keyword%")->paginate(8));
+    }
+
+    public function getActiveProducts()
+    {
+        return $this->sendData('',Product::where('status','=',1)->paginate(8));
+    }
+
+    protected function checkCategory(int $categoryId)
+    {
+        $category=Category::find($categoryId);
+        if(!$category->status && empty($category->products[0])) // if assgin first product to ctegory make category available
+        {
+            $category->status =1;
+            $category->save();
+        }
+    }
+
+    private function addIngredientToProduct($request,$product)
+    {
+
+        $ingredientsData = [];
+        foreach ($request->ingredients as $ingredientData) {
+            $ingredientId = $ingredientData['id'];
+            $quantity = $ingredientData['quantity'];
+            $total = $ingredientData['total'] ;
+            $price = $ingredientData['total'] / $ingredientData['quantity'];
+            $ingredientsData[$ingredientId] = compact('quantity', 'total', 'price');
+        }
+        return  $product->ingredients()->sync($ingredientsData);
+    }
     public function updateIngredientsForProduct(UpdateProductIngredientRequest $request,int $id)
     {
         $product = Product::find($id);
@@ -144,22 +170,8 @@ class ProductController extends Controller
         }
     }
 
-    public function search(Request $request)
-    {
-        $keyword =$request->input('keyword','');
-        return $this->sendData('',Product::where('name','like',"%$keyword%")->paginate(8));
-    }
-
-    public function getActiveProducts()
-    {
-        return $this->sendData('',Product::where('status','=',1)->paginate(8));
-    }
 
 
-    //filter by price
 
-    public function getByPrice()
-    {
 
-    }
 }
