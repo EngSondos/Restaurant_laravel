@@ -20,7 +20,6 @@ class Order extends Model
 
     protected $attributes = [
         'total_price' => 0,
-        // other default attribute values...
     ];
 
 
@@ -30,7 +29,7 @@ class Order extends Model
             ->withPivot(['quantity', 'total_price', 'status']);
     }
 
-
+   
 
 
 

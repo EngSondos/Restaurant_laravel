@@ -21,6 +21,49 @@ class OrderProductController extends Controller
     /**
      * Display a listing of the resource.
      */
+
+
+
+
+     public function cancelOrderProducts(int $orderId,int $orderProductId)
+     {
+         $orderProduct = OrderProduct::where('order_id', $orderId)->where('id', $orderProductId)->first();
+         
+         if(!$orderProduct){
+             return $this->error('order Product not Exist in this order');
+ 
+         }
+             $orderProduct->status = 'Cancel';
+             $orderProduct->save();
+                 
+            
+ 
+         return response()->json(['message' => 'Order Product status updated to Canceled']);
+     }
+ 
+     public function completeOrderProducts(int $orderId,int $orderProductId)
+     {
+         $orderProduct = OrderProduct::where('order_id', $orderId)->where('id', $orderProductId)->first();
+         if(!$orderProduct){
+             return $this->error('order Product not Exist in this order');
+ 
+         }
+             $orderProduct->status = 'Complete';
+             $orderProduct->save();
+     
+ 
+         return response()->json(['message' => 'Order Product status updated to Complete']);
+     }
+      
+
+
+
+
+
+
+
+
+
     public function index()
     {
         
@@ -39,12 +82,12 @@ class OrderProductController extends Controller
      */
     public function show(string $id)
     {
-        $orderProduct = OrderProduct::find($id);
+        // $orderProduct = OrderProduct::find($id);
 
-        if(!$orderProduct){
-            return $this->error('orderProduct not Exit');
-        }
-        return $this->sendData('',new OrderProductResource($orderProduct));
+        // if(!$orderProduct){
+        //     return $this->error('orderProduct not Exit');
+        // }
+        // return $this->sendData('',new OrderProductResource($orderProduct));
     }
 
     /**
@@ -64,28 +107,6 @@ class OrderProductController extends Controller
     }
 
  
-    public function cancelOrderProducts(int $orderId)
-    {
-        $orderProducts = OrderProduct::where('order_id', $orderId)->get();
-        foreach ($orderProducts as $orderProduct) {
-            $orderProduct->status = 'Cancel';
-            $orderProduct->save();
-        }
-
-        return response()->json(['message' => 'Order Products status updated to Canceled']);
-    }
-
-    public function completeOrderProducts(int $orderId)
-    {
-        $orderProducts = OrderProduct::where('order_id', $orderId)->get();
-        foreach ($orderProducts as $orderProduct) {
-            $orderProduct->status = 'Complete';
-            $orderProduct->save();
-        }
-
-        return response()->json(['message' => 'Order Products status updated to Complete']);
-    }
-     
 
 
 

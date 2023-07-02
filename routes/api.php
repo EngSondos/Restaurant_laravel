@@ -122,6 +122,8 @@ Route::prefix('orders')->controller(OrderController::class)->group(function(){
     Route::get('/tables/prepare','getTablesWithPreparedOrders');
 
     Route::get('prepare','prepareOrders');
+    
+    Route::get('served','servedOrders');
 
 
     Route::get('/{id}','show');
@@ -129,12 +131,17 @@ Route::prefix('orders')->controller(OrderController::class)->group(function(){
     Route::get('tables/{id}','getOrderTable');
     
     Route::post('/{order_id}/status/{new_status}','UpdateOrderStatus');
+
+    Route::put('kitchen/{id}','changeOrderStatus');
+
 });
 
 Route::prefix('order_products')->controller(OrderProductController::class)->group(function(){
 
-    Route::put('{orderId}','cancelOrderProducts');
-    Route::put('{orderId}','completeOrderProducts');
+    Route::put('{orderId}/cancel/{orderProductId}','cancelOrderProducts');
+    Route::put('{orderId}/complete/{orderProductId}','completeOrderProducts');
+
+    
 
 
 

@@ -6,10 +6,13 @@ use Illuminate\Http\Request;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Resources\Order\OrderResource;
 use App\Http\Resources\Table\TableResource;
+use Illuminate\Support\Facades\DB;
+
 
 use App\Events\OrderCreated;
 
 use App\Models\Order;
+use App\Models\OrderProduct;
 use App\Models\Table;
 use App\Http\Services\Media;
 
@@ -96,24 +99,29 @@ class OrderController extends Controller
 {
     $orders = Order::with('products')->where('status', 'prepare')->get();
 
+    if($orders->isEmpty()){
+        return $this->error('no prepare orders exist');
+    }
+
+
+    return $this->sendData('', OrderResource::collection($orders));
+}
+  
+
+//show orders not paid to cashier
+
+public function servedOrders()
+{
+    $orders = Order::with('products')->where('status', 'served')->get();
+
+    if($orders->isEmpty()){
+        return $this->error('no served orders exist');
+    }
+
     return $this->sendData('', OrderResource::collection($orders));
 }
 
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        //
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
-    }
 
     public function getTablesWithPreparedOrders()
     {
@@ -150,6 +158,10 @@ class OrderController extends Controller
     }
 
 
+
+
+            // change status for the waiter
+
         public function UpdateOrderStatus(int $order_id,string $new_status)
         {
             try{
@@ -164,5 +176,55 @@ class OrderController extends Controller
                 $order->update(['status'=>$new_status]);
                 return $this->success('Order status updated successfully');
         }
+
+
+        
+
+        // change status for the kitchen
+
+        public function changeOrderStatus(int $orderId)
+        {
+            $order = Order::find($orderId);
+            if (!$order) {
+                return response()->json(['error' => 'Order not found'], 404);
+            }
+
+            $allComplete = false;
+            $allCanceled = false;
+
+            foreach ($order->products as $product) {
+                if ($product->pivot->status === 'Complete') {
+                    $allComplete = true;
+                } else {
+                    $allComplete = false;
+                  }
+
+                if ($product->pivot->status === 'Cancel') {
+                    $allCanceled = true;
+                } else {
+                    $allCanceled = false;
+                  }
+
+                if ($allComplete || $allCanceled) {
+                    break;
+                 }
+            }
+
+            if ($allComplete) {
+                $order->status = 'Complete';
+            } elseif ($allCanceled) {
+                $order->status = 'Canceled';
+            }
+
+            if (!$order->save()) {
+                return $this->error('Failed to update order status');
+
+            }
+
+            return $this->success('Order status updated');
+
+            }
+
+
 
 }
