@@ -8,7 +8,9 @@ use App\Models\Cart;
 use App\Models\CartProduct;
 use App\Models\Product;
 use App\Traits\ApiRespone;
+
 use Illuminate\Support\Facades\DB;
+use Illuminate\Http\Request;
 
 class CartController extends Controller
 {
@@ -28,7 +30,7 @@ class CartController extends Controller
 
         $cart = $carts->cartProduct()->with('product.ingredients')->paginate(8);
 
-        return $this->sendData('All Carts has been retrieved',[$cart,'cart_total_price' => $carts->total_price][0]);
+        return $this->sendData('All Carts has been retrieved',[$cart,'cart_total_price' => $carts->total_price]);
     }
 
     /**
@@ -67,7 +69,7 @@ class CartController extends Controller
     {
         $userid = 1;
         //get the card that the user interact with 
-        $cartproduct = CartProduct::with('product.ingredients')->where('id', $req['id'])->first();
+        $cartproduct = CartProduct::with('product.ingredients')->findOrFail( $req['id']);
         //get the ingredients of this product
         $productIngredients = $cartproduct->product->ingredients;
         //recieve the quantity of the product that user need 
@@ -96,44 +98,40 @@ class CartController extends Controller
     }
 
     /**
-     * Destroy card
+     * Destroy one card or all cards
      */
-    public function destroy(CartProduct $cart)
+    public function destroy(Request $request)
     {
         $userid = 1;
+        if($request['id']){
+            $cart_product =  DB::table('cart_product')->where('id',$request['id'])->exists();
+            if(!$cart_product){
+                return $this->error("This Product Doesn't Exist In The Cart");
+            }
+            DB::table('cart_product')->where('cart_product.id', $request['id'])->delete();
 
-        DB::table('cart_product')->where('cart_product.id', $cart->id)->delete();
+            $total_price_on_cart = $this->countTotalPrice($userid);
 
-        $total_price_on_cart = $this->countTotalPrice($userid);
+            if ($total_price_on_cart == 0) {
 
-        if ($total_price_on_cart == 0) {
+                DB::table('carts')->where('user_id', '=', $userid)->delete();
 
-            DB::table('carts')->where('user_id', '=', $userid)->delete();
+                return $this->success('No Products In The Cart');
+            }
 
-            return $this->success('now the cart is totally empty');
+            DB::table('carts')->where('user_id', '=', $userid)->update([
+                'total_price'=>$total_price_on_cart,
+                'updated_at' => now()
+            ]);
+
+            return $this->success('Product Deleted Successfully From Cart');
         }
-
-        $cartdata['total_price'] = $total_price_on_cart;
-
-        $cartdata['updated_at'] = now();
-
-        DB::table('carts')->where('user_id', '=', $userid)->update($cartdata);
-
-        return $this->sendData('', ['total_price' => $total_price_on_cart]);
-    }
-
-    /**
-     * Destroy all cards
-     */
-    public function destroyAll()
-    {
-        $userid = 1;
-
         DB::table('cart_product')->where('cart_product.user_id', $userid)->delete();
 
         DB::table('carts')->where('user_id', '=', $userid)->delete();
 
-        return $this->success('now the cart is totally empty');
+        return $this->success('No Products In The Cart');
+        
     }
 
     /**
@@ -147,14 +145,11 @@ class CartController extends Controller
         if (Cart::where('user_id', $user_id)->exists()) {
             DB::table('carts')->where('user_id', $user_id)->update(['total_price' => $totalprice, 'updated_at' => now()]);
         } else {
-
-            $cartdata['total_price'] = $totalprice;
-
-            $cartdata['user_id'] = $user_id;
-
-            $cartdata['created_at'] = now();
-
-            DB::table('carts')->insert($cartdata);
+            Cart::insert([
+                'total_price' => $totalprice,
+                'user_id' => $user_id,
+                'created_at' => now()
+            ]);
         }
         return $totalprice;
     }

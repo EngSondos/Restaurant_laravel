@@ -28,29 +28,42 @@ use App\Http\Controllers\OrderController;
 //     return $request->user();
 // });
 
-// Route::apiResource('/ingredients',IngredientController::class);
+// Route::apiResource('/ingredients',);
 
-//ingrdents api
+
+
+
+
+//Ingrdents API Methods
 Route::apiResource('ingredients',IngredientController::class)->except('destroy');
+Route::controller(IngredientController::class)->group(function(){
+    Route::get('ingredients/status/{id}','changeStatus');
 
-Route::get('ingredients/status/{id}',[IngredientController::class,'changeStatus']);
-Route::get('search/ingredient',[IngredientController::class,'search']);
-Route::get('active/ingredient',[IngredientController::class,'getActiveIngredients']);
+    Route::get('search/ingredient','search');
 
+    Route::get('active/ingredient','getActiveIngredients');
+});
 
-
-//product api
+//Products API Methods
 Route::apiResource('products',ProductController::class)->except('destroy');
-Route::get('products/status/{id}',[ProductController::class,'changeStatus']);
-Route::put('product/update/ingredients/{product}',[ProductController::class,'updateIngredientsForProduct']);
-Route::get('search/product',[ProductController::class,'search']);
-Route::get('active/product',[ProductController::class,'getActiveProducts']);
+Route::controller(ProductController::class)->group(function(){
+    Route::get('products/status/{id}','changeStatus');
 
-//reservation api for admin
-Route::get('reservation',[ReservationController::class ,'index']);
-Route::get('reservation/date',[ReservationController::class ,'getReservationByDate']);
-Route::get('reservation/{id}',[ReservationController::class ,'getReservationByTableId']);
+    Route::put('product/update/ingredients/{product}','updateIngredientsForProduct');
 
+    Route::get('search/product','search');
+
+    Route::get('active/product','getActiveProducts');
+});
+
+//Reservation API Methods For Admin
+Route::prefix('reservation')->controller(ReservationController::class)->group(function(){
+    Route::get('','index');
+
+    Route::get('/date','getReservationByDate');
+
+    Route::get('/{id}','getReservationByTableId');
+});
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
@@ -58,7 +71,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 // Route::middleware('auth:sanctum')->prefix('users')->group(function(){
-//     Route::get('/auth',[UserController::class, 'UserDetails']);
+//     Route::get('/auth','UserDetails');
 
 // });
 
@@ -72,60 +85,75 @@ Route::prefix('users')->group(function(){
 
 });
 
+//Users API Methods For Admin
+Route::prefix('users')->controller(UserController::class)->group(function(){
+    Route::get('','index');
 
+    Route::post('','store');
 
-Route::prefix('tables')->group(function(){
-    Route::get('',[TableController::class, 'index']);
-    Route::post('',[TableController::class, 'store']);
-    Route::get('available',[TableController::class, 'getAvailableTables']);
-    Route::get('/{id}',[TableController::class, 'show']);
-    Route::put('/{id}',[TableController::class, 'update']);
-    Route::get('status/{id}',[TableController::class, 'changeStatus']);
-    Route::get('available',[TableController::class, 'getAvailableTables']);
+    Route::get('/{id}','show');
 
+    Route::put('/{id}','update');
 
+    Route::delete('/{id}','destroy');
 });
 
 
-Route::prefix('orders')->group(function(){
-    Route::get('',[OrderController::class, 'index']);
-    Route::post('',[OrderController::class, 'store']);
-    Route::get('/tables/prepare',[OrderController::class, 'getTablesWithPreparedOrders']);
-    // Route::get('/{id}',[OrderController::class, 'show']);
-    Route::get('tables/{id}',[OrderController::class, 'getOrderTable']);
-    Route::post('/{order_id}/status/{new_status}',[OrderController::class, 'UpdateOrderStatus']);
+//Tables API Methods For Admin
+Route::prefix('tables')->controller(TableController::class)->group(function(){
+    Route::get('','index');
 
+    Route::post('','store');
 
+    Route::get('available','getAvailableTables');
 
+    Route::get('/{id}','show');
 
-});
-Route::prefix('category')->controller(CartegoryController::class)->name('category')->group(function (){
-    Route::get('/','index')->name('.index');
+    Route::put('/{id}','update');
 
-    Route::post('/','store')->name('.store');
+    Route::get('status/{id}','changeStatus');
 
-    Route::get('/{category}/edit','edit')->name('.edit');
-
-    Route::put('/{category}','update')->name('.update');
-
-    Route::get('/show','show')->name('.show');
-
-    Route::delete('/{category}','destroy')->name('.destroy');
-
+    Route::get('available','getAvailableTables');
 });
 
+//Orders API Methods For Waiter
+Route::prefix('orders')->controller(OrderController::class)->group(function(){
+    Route::get('','index');
 
-Route::prefix('cart')->controller(CartController::class)->name('cart')->group(function (){
-    Route::get('/','index')->name('.index');
+    Route::post('','store');
 
-    Route::post('/','store')->name('.store');
+    Route::get('/tables/prepare','getTablesWithPreparedOrders');
 
-    Route::delete('/','destroyall')->name('.destroyall');
+    // Route::get('/{id}','show');
 
-    Route::put('/','update')->name('.update');
+    Route::get('tables/{id}','getOrderTable');
+    
+    Route::post('/{order_id}/status/{new_status}','UpdateOrderStatus');
+});
 
-    Route::get('/show','show')->name('.show');
+//Categories API Methods For Admin
+Route::prefix('category')->controller(CartegoryController::class)->group(function (){
+    Route::get('/','index');
 
-    Route::delete('/{cart}','destroy')->name('.destroy');
+    Route::post('/','store');
+
+    Route::get('/{category}/edit','edit');
+
+    Route::put('/{category}','update');
+
+    Route::get('/show','show');
+
+    Route::delete('/{category}','destroy');
+});
+
+//Cart API Methods For 
+Route::prefix('cart')->controller(CartController::class)->group(function (){
+    Route::get('/','index');
+
+    Route::post('/','store');
+
+    Route::put('/','update');
+
+    Route::delete('/','destroy');
 });
 
