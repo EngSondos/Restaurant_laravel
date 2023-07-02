@@ -54,7 +54,7 @@ Route::get('reservation/{id}',[ReservationController::class ,'getReservationByTa
 //reservation for user -->
 Route::prefix('reservation')->controller(ReservationController::class)->group(function(){
     Route::post('',[ReservationController::class,'store']);
-    Route::get('',[ReservationController::class,'showAvailableTimeToCustomerByTableId']);
+    Route::get('/date/{table_id}',[ReservationController::class,'getAvailableDateByTableId']);
 
 
 });

@@ -2,12 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Resources\Table\TableResource;
 use App\Models\Reservation;
 use App\Models\Table;
 use App\Traits\ApiRespone;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 
 class ReservationController extends Controller
@@ -44,13 +46,13 @@ class ReservationController extends Controller
     public function  store (Request $request)
     {
         //request -->>> table , date ->
-        $calculate_end_date = Carbon::parse($request->start_date)->addHours(2)->toDate()->format('Y-m-d H:i:s');
-        $end_date = $request->input('end_date',$calculate_end_date);
+        // $calculate_end_date = Carbon::parse($request->start_date)->addHours(2)->toDate()->format('Y-m-d H:i:s');
+        // $end_date = $request->input('end_date',$calculate_end_date);
 
         $reservation = new Reservation;
         $reservation->start_date = $request->input('start_date');
 
-        $reservation->end_date = $end_date;
+        // $reservation->end_date = $end_date;
         //check in range
 
         $reservation->table_id = $request->input('table_id');
@@ -62,48 +64,50 @@ class ReservationController extends Controller
 
 
     }
-    public function showAvailableTimeToCustomerByTableId(Request $request) //starttime
+    // public function getAvailableTablesToReserve($date)
+    // {
+    //     // dd($date);
+    //     $available_table =  TableResource::collection(Table::doesntHave('reservations',function
+    //      ($query) use ($date) {
+    //             $query->whereRaw('Date(start_date) = ?', [$date]);
+    //     })->get());
+    //     return $this->sendData('',$available_table);
+
+    // }
+
+    public function getAvailableDateByTableId(int $table_id)
     {
-        //table id and day which want to reserve in it
-         $reservations = Reservation::where('table_id','=',$request->table_id)
-         ->whereRaw('DATE(start_date) = ?', [$request->date])->orderBy('start_date')
-         ->get();
-         $times= [];
-         foreach($reservations as $index => $reservation)
-         {
-            $start =new DateTime($reservation['start_date']);
-            $end =new DateTime($reservation['end_date']);
-            // dd($start);
-            $times [$reservation['id']] = [$start->format('H:i:s'),$end->format('H:i:s')];
-            // dd($times);
-         }
-        $free_time=[];
-        //check with first start date -> free time ;
-         //check with last end date -> free time; 
-
-         foreach($times as $index => $time)
-         {
-            $start_current = substr($time[0],0,2);
-            $end_current = substr($time[1],0,2);
-
-            $duration = $end_current-$start_current;
-            if (isset($times[$index + 1])) {
-                $next_start = substr($times[$index + 1][0],0,2);
-                $gap = $next_start-$end_current;
-                // dd($gap);
-            if( $gap>=2)
-            {
-                $free_time[$index] =[$time[1],$times[$index+1][0]];
-            }
-
+        $startDate = Carbon::now()->startOfDay();
+        $endDate = $startDate->copy()->addDays(7);
+        $freeDate=[];
+        //get resevation for this week
+        $reservations = Reservation::where('table_id',$table_id)
+        ->whereBetween('start_date',[$startDate,$endDate])->orderby('start_date')
+        ->pluck(DB::raw("DATE_FORMAT(start_date, '%Y-%m-%d') as start_date"));
+        // dd($reservations);
+        //all is reserved
+        if($reservations->count()==7)
+        {
+            return $this->success('No Time Available For this Table In This Week');
         }
-         }
-         dd($free_time);
 
 
+        $dates=[];
+        for ($date = $startDate; $date < $endDate; $date = $date->copy()->addDay()) {
+            $dates[] = $date->format('Y-m-d');
+        }
+        // no reservetion on this week
+        if($reservations->count() == 0 )
+        {
+            return $this->sendData('Free On This Week ',$dates);
+        }
+        //get available date
+        $freeDate = array_diff($dates,$reservations->values()->toArray());
+        $freeDate = array_values($freeDate);
+
+        return $this->sendData('Free On This Week ',$freeDate);
 
     }
-
 
     public function getReservationByCustomerId($customer_id) // will make by auth
     {
