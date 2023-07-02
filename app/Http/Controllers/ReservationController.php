@@ -65,12 +65,13 @@ class ReservationController extends Controller
     public function getAvailableDateByTableId(int $table_id)
     {
         $startDate = Carbon::now()->startOfDay();
+        // dd($startDate);
         $endDate = $startDate->copy()->addDays(7);
         $freeDate=[];
 
         //get resevation for this week
         $reservations = Reservation::where('table_id',$table_id)
-        ->whereBetween('start_date',[$startDate,$endDate])->orderby('start_date')
+        ->whereBetween('start_date',[$startDate,$endDate])->whereNot('status','canceled')->orderby('start_date')
         ->pluck(DB::raw("DATE_FORMAT(start_date, '%Y-%m-%d') as start_date"));
 
         //all is reserved
