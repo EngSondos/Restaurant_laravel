@@ -50,6 +50,11 @@ Route::controller(ProductController::class)->group(function(){
     Route::get('products/status/{id}','changeStatus');
 
     Route::put('product/update/ingredients/{product}','updateIngredientsForProduct');
+});
+//reservation for user -->
+Route::prefix('reservation')->controller(ReservationController::class)->group(function(){
+    Route::post('',[ReservationController::class,'store']);
+    Route::get('/date/{table_id}',[ReservationController::class,'getAvailableDateByTableId']);
 
     Route::get('search/product','search');
 
@@ -65,9 +70,11 @@ Route::prefix('reservation')->controller(ReservationController::class)->group(fu
     Route::get('/{id}','getReservationByTableId');
 });
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
+
+
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
 
 
 // Route::middleware('auth:sanctum')->prefix('users')->group(function(){
@@ -127,7 +134,7 @@ Route::prefix('orders')->controller(OrderController::class)->group(function(){
     Route::get('/{id}','show');
 
     Route::get('tables/{id}','getOrderTable');
-    
+
     Route::post('/{order_id}/status/{new_status}','UpdateOrderStatus');
 });
 
@@ -146,7 +153,7 @@ Route::prefix('category')->controller(CartegoryController::class)->group(functio
     Route::delete('/{category}','destroy');
 });
 
-//Cart API Methods For 
+//Cart API Methods For
 Route::prefix('cart')->controller(CartController::class)->group(function (){
     Route::get('/','index');
 
