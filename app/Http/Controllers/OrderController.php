@@ -92,12 +92,12 @@ class OrderController extends Controller
     
     }
 
-//     public function prepareOrders()
-// {
-//     $orders = Order::with('products')->where('status', 'prepare')->get();
+    public function prepareOrders()
+{
+    $orders = Order::with('products')->where('status', 'prepare')->get();
 
-//     return $this->sendData('', OrderResource::collection($orders));
-// }
+    return $this->sendData('', OrderResource::collection($orders));
+}
 
     /**
      * Update the specified resource in storage.

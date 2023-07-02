@@ -119,6 +119,9 @@ Route::prefix('orders')->controller(OrderController::class)->group(function(){
 
     Route::get('/tables/prepare','getTablesWithPreparedOrders');
 
+    Route::get('prepare','prepareOrders');
+
+
     Route::get('/{id}','show');
 
     Route::get('tables/{id}','getOrderTable');
