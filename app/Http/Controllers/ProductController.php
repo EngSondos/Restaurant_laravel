@@ -39,11 +39,14 @@ class ProductController extends Controller
         $product->category_id = $request->category_id;
         $product->total_price = $request->total_price;
         $product->extra=json_encode($request->extra);
+        $product->discount = $request->input('discount',null);
+        $product->description = $request->input('description',null);
 
         $image_name =  Media::upload($request->image,'products');
         $product->image = $image_name;
 
         $product->save();
+        $product->UpdateStaus();
        if(  $this->addIngredientToProduct($request,$product)){
         return $this->success('Product Add Succesfully');
        }
