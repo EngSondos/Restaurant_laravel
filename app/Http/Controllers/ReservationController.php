@@ -38,23 +38,18 @@ class ReservationController extends Controller
 
     public function getReservationByDate(Request $request)
     {
-        //5 pm to 7 pm
         $reservations = Reservation::with('table')->whereBetween('start_date', [$request->start_date, $request->end_date])->get();
         return $this->sendData('',$reservations);
     }
-
+//customers function -->
     public function  store (Request $request)
     {
         //request -->>> table , date ->
-        // $calculate_end_date = Carbon::parse($request->start_date)->addHours(2)->toDate()->format('Y-m-d H:i:s');
-        // $end_date = $request->input('end_date',$calculate_end_date);
+        //validation for date -> not in database same day 
+        //validation for time start must be after now and
 
         $reservation = new Reservation;
         $reservation->start_date = $request->input('start_date');
-
-        // $reservation->end_date = $end_date;
-        //check in range
-
         $reservation->table_id = $request->input('table_id');
         $reservation->customer_id = $request->input('customer_id'); //will change by login customer
 
@@ -64,27 +59,18 @@ class ReservationController extends Controller
 
 
     }
-    // public function getAvailableTablesToReserve($date)
-    // {
-    //     // dd($date);
-    //     $available_table =  TableResource::collection(Table::doesntHave('reservations',function
-    //      ($query) use ($date) {
-    //             $query->whereRaw('Date(start_date) = ?', [$date]);
-    //     })->get());
-    //     return $this->sendData('',$available_table);
-
-    // }
 
     public function getAvailableDateByTableId(int $table_id)
     {
         $startDate = Carbon::now()->startOfDay();
         $endDate = $startDate->copy()->addDays(7);
         $freeDate=[];
+
         //get resevation for this week
         $reservations = Reservation::where('table_id',$table_id)
         ->whereBetween('start_date',[$startDate,$endDate])->orderby('start_date')
         ->pluck(DB::raw("DATE_FORMAT(start_date, '%Y-%m-%d') as start_date"));
-        // dd($reservations);
+
         //all is reserved
         if($reservations->count()==7)
         {
@@ -96,11 +82,13 @@ class ReservationController extends Controller
         for ($date = $startDate; $date < $endDate; $date = $date->copy()->addDay()) {
             $dates[] = $date->format('Y-m-d');
         }
+
         // no reservetion on this week
         if($reservations->count() == 0 )
         {
             return $this->sendData('Free On This Week ',$dates);
         }
+
         //get available date
         $freeDate = array_diff($dates,$reservations->values()->toArray());
         $freeDate = array_values($freeDate);
