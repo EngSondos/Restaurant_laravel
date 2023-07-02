@@ -61,13 +61,18 @@ Route::prefix('reservation')->controller(ReservationController::class)->group(fu
     Route::get('active/product','getActiveProducts');
 });
 
-//Reservation API Methods For Admin
+//Reservation API
 Route::prefix('reservation')->controller(ReservationController::class)->group(function(){
     Route::get('','index');
 
     Route::get('/date','getReservationByDate');
 
     Route::get('/{id}','getReservationByTableId');
+
+    //cancel reservation -->
+    Route::put('/status/cancel/{id}','cancelReservation');
+    Route::put('/status/accept/{id}','AcceptReservation');
+
 });
 
 
