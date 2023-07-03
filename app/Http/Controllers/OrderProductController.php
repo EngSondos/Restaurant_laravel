@@ -38,7 +38,8 @@ class OrderProductController extends Controller
                  
             
  
-         return response()->json(['message' => 'Order Product status updated to Canceled']);
+         return $this->success("Order Product status updated to Canceled") ;
+
      }
  
      public function completeOrderProducts(int $orderId,int $orderProductId)
@@ -52,7 +53,8 @@ class OrderProductController extends Controller
              $orderProduct->save();
      
  
-         return response()->json(['message' => 'Order Product status updated to Complete']);
+         return $this->success("Order Product status updated to Complete") ;
+
      }
       
 
