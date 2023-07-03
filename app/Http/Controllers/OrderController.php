@@ -111,7 +111,7 @@ class OrderController extends Controller
 
 public function servedOrders()
 {
-    $orders = Order::with('products')->where('status', 'served')->get();
+    $orders = Order::with(['products','reservation'])->where('status', 'served')->get();
 
     if($orders->isEmpty()){
         return $this->error('no served orders exist');

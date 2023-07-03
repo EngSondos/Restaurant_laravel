@@ -42,6 +42,9 @@ class OrderResource extends JsonResource
 
         return [
             'id' => $this->id,
+            'reservation_id' => $this->whenLoaded('reservation', function () {
+                return $this->reservation->id;
+            }),
             'total_price' => $this->total_price,
             'discount' => $this->discount,
             'tax' => $this->tax,

@@ -15,7 +15,7 @@ class Order extends Model
     
 
     protected $fillable = [
-        "total_price" , "status" , "user_id" , "table_id" , "customer_id","discount","tax","service_fee"
+        "total_price" , "status" , "user_id" , "table_id" , "customer_id","discount","tax","service_fee","reservation_id"
     ];
 
     protected $attributes = [
@@ -29,7 +29,10 @@ class Order extends Model
             ->withPivot(['quantity', 'total_price', 'status']);
     }
 
-   
+    public function reservation()
+    {
+        return $this->belongsTo(Reservation::class);
+    }
 
 
 

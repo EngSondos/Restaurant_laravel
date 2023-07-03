@@ -24,7 +24,9 @@ class StoreReservationRequest extends FormRequest
         return [
             "start_date"=>"required|date",
             "table_id"=>"required|exists:tables,id",
-            "customer_id"=>"required|exists:customers,id"
+            "customer_id"=>"required|exists:customers,id",
+            'order_id' => 'sometimes|exists:orders,id',
+
         ];
     }
 }

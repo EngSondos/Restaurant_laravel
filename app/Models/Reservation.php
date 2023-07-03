@@ -13,7 +13,8 @@ class Reservation extends Model
         'start_date',
         'table_id',
         'customer_id',
-        'status'
+        'status',
+        'order_id'
     ];
 
     public function table():BelongsTo
@@ -24,4 +25,9 @@ class Reservation extends Model
     {
         return $this->belongsTo(Customer::class);
     }
+
+    public function orders()
+{
+    return $this->hasMany(Order::class);
+}
 }
