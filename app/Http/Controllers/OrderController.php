@@ -190,6 +190,8 @@ public function servedOrders()
 
             $allComplete = false;
             $allCanceled = false;
+            $hasProgress = false;
+
 
             foreach ($order->products as $product) {
                 if ($product->pivot->status === 'Complete') {
@@ -199,8 +201,15 @@ public function servedOrders()
                     $allCanceled = true;
                     event(new OrderProductCanceled($product, $order));
                  
-                 }
+                 }  elseif($product->pivot->status === 'Progress') {
+                    $hasProgress = true;
+                }
             }
+
+            if ($hasProgress) {
+                return $this->error('Cannot change order status because there are order products with the "Progress" status');
+            }
+        
 
             if ($allComplete) {
                 $order->status = 'Complete';
