@@ -22,7 +22,10 @@ class UpdateTableRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'number'=>'numeric|unique:tables,number',
+            'number'=> [
+                'numeric',
+                'unique:tables,number,'.$this->id
+            ],
             'guest_numbers'=>'integer|min:1',    
              ];
     }
