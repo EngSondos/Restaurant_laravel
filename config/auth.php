@@ -14,7 +14,7 @@ return [
     */
 
     'defaults' => [
-        'guard' => 'web',
+        'guard' => 'users',
         'passwords' => 'users',
     ],
 
@@ -38,8 +38,18 @@ return [
     'guards' => [
         'web' => [
             'driver' => 'session',
-            'provider' => 'users',
+            'provider' => 'customers',
         ],
+        'users' => [
+            'driver' => 'jwt',
+            'provider' => 'users',
+            'hash' => false,
+        ],
+        'customers' => [
+            'driver' => 'jwt',
+            'provider' => 'customers',
+            'hash' => false,
+        ]
     ],
 
     /*
@@ -64,11 +74,10 @@ return [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
         ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'customers'=>[
+            'driver' =>'eloquent',
+            'model' => App\Models\Customer::class
+        ]
     ],
 
     /*
@@ -78,7 +87,7 @@ return [
     |
     | You may specify multiple password reset configurations if you have more
     | than one user table or model in the application and you want to have
-    | separate password reset settings based on the specific user types.
+    | separate  password reset settings based on the specific user types.
     |
     | The expiry time is the number of minutes that each reset token will be
     | considered valid. This security feature keeps tokens short-lived so
