@@ -59,11 +59,6 @@ class OrderProductController extends Controller
 
 
 
-
-
-
-
-
     public function index()
     {
         

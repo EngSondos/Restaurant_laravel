@@ -6,17 +6,16 @@ use Illuminate\Http\Request;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Resources\Order\OrderResource;
 use App\Http\Resources\Table\TableResource;
-use Illuminate\Support\Facades\DB;
 
 
 use App\Events\OrderCreated;
 
-use App\Models\Order;
-use App\Models\OrderProduct;
-use App\Models\Table;
-use App\Http\Services\Media;
+use App\Events\OrderProductCanceled;
 
-use App\Models\Product;
+
+use App\Models\Order;
+use App\Models\Table;
+
 use App\Traits\ApiRespone;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Response;
@@ -178,7 +177,7 @@ public function servedOrders()
         }
 
 
-        
+
 
         // change status for the kitchen
 
@@ -195,18 +194,11 @@ public function servedOrders()
             foreach ($order->products as $product) {
                 if ($product->pivot->status === 'Complete') {
                     $allComplete = true;
-                } else {
-                    $allComplete = false;
-                  }
 
-                if ($product->pivot->status === 'Cancel') {
+                } elseif($product->pivot->status === 'Cancel')  {
                     $allCanceled = true;
-                } else {
-                    $allCanceled = false;
-                  }
-
-                if ($allComplete || $allCanceled) {
-                    break;
+                    event(new OrderProductCanceled($product, $order));
+                 
                  }
             }
 
@@ -214,12 +206,12 @@ public function servedOrders()
                 $order->status = 'Complete';
             } elseif ($allCanceled) {
                 $order->status = 'Canceled';
-            }
+             }
 
             if (!$order->save()) {
                 return $this->error('Failed to update order status');
 
-            }
+              }
 
             return $this->success('Order status updated');
 

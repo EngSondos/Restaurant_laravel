@@ -10,6 +10,11 @@ use App\Events\OrderCreated;
 use App\Listeners\UpdateIngredientQuantities;
 use App\Listeners\insertOrderProductImage;
 
+use App\Events\OrderProductCanceled;
+use App\Listeners\OnOrderProductCanceled;
+
+
+
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -26,6 +31,12 @@ class EventServiceProvider extends ServiceProvider
         OrderCreated::class => [
             UpdateIngredientQuantities::class,
             insertOrderProductImage::class
+
+        ],
+
+
+        OrderProductCanceled::class => [
+            OnOrderProductCanceled::class
 
         ],
     ];
