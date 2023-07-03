@@ -22,7 +22,8 @@ class OrderResource extends JsonResource
                     'id' => $product->id,
                     'name' => $product->name,
                     'price' => $product->total_price,
-                  
+                    'image'=>$product->image
+
                 ];
             });
         });
@@ -34,7 +35,6 @@ class OrderResource extends JsonResource
                     'quantity' => $product->pivot->quantity,
                     'total_price' => $product->pivot->total_price,
                     'status' => $product->pivot->status,
-                   'image' => $product->image,
                 ];
             });
         });
@@ -57,13 +57,13 @@ class OrderResource extends JsonResource
             'products' => $products,
             'order_products' => $order_products,
 
-        ];   
+        ];
      }
 
 
      public function with($request)
      {
- 
+
          return [
              'meta' => [
                  'pagination' => [

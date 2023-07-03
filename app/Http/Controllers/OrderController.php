@@ -32,16 +32,16 @@ class OrderController extends Controller
         $orders = Order::whereNotIn('status',['served','paid'])
         ->with('products')->paginate(8);
         return OrderResource::collection($orders)
-        ->additional(['message' => 'Orders Retrieved Successfully']);  
-    
+        ->additional(['message' => 'Orders Retrieved Successfully']);
+
     }
 
     /**
      * Store a newly created resource in storage.
      */
-  
 
-    
+
+
 
 
     public function store(StoreOrderRequest $request)
@@ -53,20 +53,20 @@ class OrderController extends Controller
         $total_price = $request->input('total_price') * (1 + $tax) * (1 + $service_fee) - ($data['discount'] ?? 0);
         $data['total_price'] = $total_price;
 
-    
+
         $order= Order::create($data);
-    
-    
+
+
         $products = $request->input('products');
-    
+
         foreach ($products as $product) {
-         
+
             $order->products()->attach($product['id'], [
                 'quantity' => $product['quantity'],
                 'total_price' => $product['total_price'],
                 'status' => 'progress',
             ]);
-        
+
         }
         event(new OrderCreated($order));
 
@@ -90,8 +90,8 @@ class OrderController extends Controller
         if(!$order){
             return $this->error('order not Exist');
         }
-        return $this->sendData('',new OrderResource($order));  
-    
+        return $this->sendData('',new OrderResource($order));
+
     }
 
     public function prepareOrders()
@@ -105,7 +105,7 @@ class OrderController extends Controller
 
     return $this->sendData('', OrderResource::collection($orders));
 }
-  
+
 
 //show orders not paid to cashier
 
@@ -125,13 +125,13 @@ public function servedOrders()
     public function getTablesWithPreparedOrders()
     {
         $tableIds = Order::where('status', '=', 'Prepare')->pluck('table_id')->unique();
-    
+
         if ($tableIds->isEmpty()) {
             return $this->error('No tables found with prepared orders');
         }
-    
+
         $tables = Table::whereIn('id', $tableIds)->get();
-    
+
         return TableResource::collection($tables)
             ->additional(['message' => 'Tables with prepared orders retrieved successfully']);
     }
@@ -145,13 +145,13 @@ public function servedOrders()
         } catch (ModelNotFoundException $exception){
             return $this->error('Table not found', Response::HTTP_NOT_FOUND);
         }
-    
+
         $prepareOrders = Order::where('table_id', '=', $table_id)->where('status','=','Prepare')->with('products')->get();
-    
+
         if ($prepareOrders->isEmpty()) {
             return $this->error('No prepared orders found for this table');
         }
-    
+
         return OrderResource::collection($prepareOrders)
             ->additional(['message' => 'Prepared orders for table '.$table_id.' retrieved successfully']);
     }
@@ -190,6 +190,8 @@ public function servedOrders()
 
             $allComplete = false;
             $allCanceled = false;
+            $hasProgress = false;
+
 
             foreach ($order->products as $product) {
                 if ($product->pivot->status === 'Complete') {
@@ -198,9 +200,16 @@ public function servedOrders()
                 } elseif($product->pivot->status === 'Cancel')  {
                     $allCanceled = true;
                     event(new OrderProductCanceled($product, $order));
-                 
-                 }
+
+                 }  elseif($product->pivot->status === 'Progress') {
+                    $hasProgress = true;
+                }
             }
+
+            if ($hasProgress) {
+                return $this->error('Cannot change order status because there are order products with the "Progress" status');
+            }
+
 
             if ($allComplete) {
                 $order->status = 'Complete';
