@@ -7,9 +7,7 @@ use App\Http\Requests\Product\UpdateProductIngredientRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Services\Media;
 use App\Models\Category;
-use App\Models\Ingredient;
 use App\Models\Product;
-
 use App\Traits\ApiRespone;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -65,15 +63,15 @@ class ProductController extends Controller
         $product = Product::with('ingredients')->find($id);
 
 
-        if( $product->extra)
-        {
-            $extras= [];
-            foreach($product->extra as $extra){
-               $extras[$extra]= Ingredient::where('id',$extra)->get('name');
-            }
-            // dd($extras);
-            $product->extra = $extras;
-        }
+        // if( $product->extra)
+        // {
+        //     $extras= [];
+        //     foreach($product->extra as $extra){
+        //        $extras[$extra]= Ingredient::where('id',$extra)->get('name');
+        //     }
+        //     // dd($extras);
+        //     $product->extra = $extras;
+        // }
 
 
         if(!$product){
@@ -116,7 +114,7 @@ class ProductController extends Controller
 
     public function getActiveProducts()
     {
-        return $this->sendData('',Product::where('status','=',1)->paginate(8));
+        return $this->sendData('',Product::where('status','=',1)->where('closed',0)->paginate(8));
     }
 
     protected function checkCategory(int $categoryId)
@@ -155,18 +153,18 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function changeStatus(int $id)
+    public function changeClosed(int $id)
     {
         $porduct = Product::find($id);
 
         if (!$porduct) {
             return $this->error('This Ingredient Not Exist');
         }
-
-        if ($porduct->UpdateStaus()) {
-            return $this->success("Ingredient Updated Successfully");
+        $porduct->closed=!$porduct->closed;
+        if ($porduct->save()) {
+            return $this->success("Product Updated Successfully");
         } else {
-            return $this->error('Ingredient Not Updated ', Response::HTTP_NOT_MODIFIED);
+            return $this->error('Product Not Updated ', Response::HTTP_NOT_MODIFIED);
         }
     }
 
