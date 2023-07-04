@@ -58,9 +58,10 @@ use App\Http\Controllers\StaffAuthController;
 
 
 // //Ingrdents API Methods
-// Route::apiResource('ingredients', IngredientController::class)->except('destroy');
+// Route::apiResource('ingredients', IngredientController::class)->except('destroy')->middleware(['auth:users','role:Admin']);
 
-// Route::middleware("auth:users")->controller(IngredientController::class)->group(function () {
+// Route::middleware(['auth:users','role:Admin'])->controller(IngredientController::class)->group(function () {
+
 //     Route::get('ingredients/status/{id}', 'changeClosed');
 
 //     Route::get('search/ingredient', 'search');
@@ -69,22 +70,24 @@ use App\Http\Controllers\StaffAuthController;
 // });
 
 // //Products API Methods
-// Route::middleware("auth:users")->apiResource('products', ProductController::class)->except('destroy');
+// Route::middleware(['auth:users','role:Admin'])->apiResource('products', ProductController::class)->except('destroy');
 
-// Route::controller(ProductController::class)->group(function () {
+// Route::controller(ProductController::class)->middleware(['auth:users','role:Admin'])->group(function () {
 //     Route::get('products/status/{id}', 'changeStatus');
 
 //     Route::put('product/update/ingredients/{product}', 'updateIngredientsForProduct');
+// });
+// Route::controller(ProductController::class)->middleware(['auth:users,customers','role:Admin,Waiter'])->group(function () {
 
-//     Route::get('search/product', 'search');
+// Route::get('search/product', 'search');
 
-//     Route::get('active/product', 'getActiveProducts');
+// Route::get('active/product', 'getActiveProducts');
 // });
 
 // //Reservation API
 // Route::prefix('reservation')->controller(ReservationController::class)->group(function () {
 //     //reservation for user -->
-//     Route::middleware("auth:users")->group(function () {
+//     Route::middleware(['auth:users','role:Admin,Cashier'])->group(function () {
 //         //for admin
 //         Route::get('', 'index');
 
@@ -93,20 +96,28 @@ use App\Http\Controllers\StaffAuthController;
 //         Route::get('/{id}', 'getReservationByTableId');
 
 //         //cancel reservation --> cashair
-//         Route::put('/status/cancel/{id}', 'cancelReservation');
 
 //         Route::put('/status/accept/{id}', 'AcceptReservation');
 //     });
-    
+
+//     Route::middleware(['auth:users,customers','role:Cashier'])->group(function(){
+
+//         Route::put('/status/cancel/{id}', 'cancelReservation');
+//     });
+
 //     Route::middleware("auth:customers")->group(function () {
-//         Route::post('', 'store')->middleware();
+
+//         Route::post('', 'store');
 
 //         Route::get('/date/{table_id}', 'getAvailableDateByTableId');
+
+//         Route::get('get/customer','getReservationByCustomerId');
+
 //     });
 // });
 
 // //Users API Methods For Admin
-// Route::prefix('users')->middleware("auth:users")->controller(UserController::class)->group(function () {
+// Route::prefix('users')->middleware(['auth:users','role:Admin'])->controller(UserController::class)->group(function () {
 //     Route::get('', 'index');
 
 //     Route::get('/search', 'search');
@@ -122,20 +133,23 @@ use App\Http\Controllers\StaffAuthController;
 
 
 // //Tables API Methods For Admin
-// Route::prefix('tables')->middleware("auth:users")->controller(TableController::class)->group(function () {
-//     Route::get('', 'index');
+// Route::prefix('tables')->controller(TableController::class)->group(function () {
+//     Route::middleware(['auth:users','role:Admin'])->group(function(){
+//         Route::get('', 'index');
 
-//     Route::post('', 'store');
+//         Route::post('', 'store');
 
-//     Route::get('available', 'getAvailableTables');
+//         Route::get('available', 'getAvailableTables');
 
-//     Route::get('/{id}', 'show');
+//         Route::get('/{id}', 'show');
 
-//     Route::put('/{id}', 'update');
+//         Route::put('/{id}', 'update');
 
-//     Route::get('status/{id}', 'changeStatus');
+//         Route::get('status/{id}', 'changeStatus');
+//     });
 
-//     Route::get('available/inday', 'availbeTablesInTheDay');
+
+//     Route::get('available/inday', 'availbeTablesInTheDay')->middleware(['auth:users','role:Waiter']);
 // });
 
 // //Orders API Methods For Waiter
@@ -167,7 +181,7 @@ use App\Http\Controllers\StaffAuthController;
 // });
 
 // //Categories API Methods For Admin
-// Route::prefix('category')->middleware("auth:users")->controller(CartegoryController::class)->group(function () {
+// Route::prefix('category')->middleware(["auth:users","role:Admin"])->controller(CartegoryController::class)->group(function () {
 //     Route::get('/', 'index');
 
 //     Route::post('/', 'store');
@@ -182,7 +196,7 @@ use App\Http\Controllers\StaffAuthController;
 // });
 
 // //Cart API Methods For
-// Route::prefix('cart')->middleware("auth:users")->controller(CartController::class)->group(function () {
+// Route::prefix('cart')->middleware(["auth:users","role:Waiter"])->controller(CartController::class)->group(function () {
 //     Route::get('/', 'index');
 
 //     Route::post('/', 'store');
@@ -223,7 +237,7 @@ Route::controller(ProductController::class)->group(function () {
 
 //Reservation API
 Route::prefix('reservation')->controller(ReservationController::class)->group(function () {
-    
+
     //for admin
     Route::get('', 'index');
 
@@ -237,9 +251,11 @@ Route::prefix('reservation')->controller(ReservationController::class)->group(fu
     Route::put('/status/accept/{id}', 'AcceptReservation');
 
     //reservation for user -->
-    Route::post('', 'store')->middleware();
+    Route::post('', 'store');
 
     Route::get('/date/{table_id}', 'getAvailableDateByTableId');
+    Route::get('/customer','getReservationByCustomerId');
+
 });
 
 //Users API Methods For Admin
@@ -285,6 +301,7 @@ Route::prefix('orders')->controller(OrderController::class)->group(function () {
     Route::get('prepare', 'prepareOrders');
 
     Route::get('served', 'servedOrders');
+
 
 
     Route::get('/{id}', 'show');

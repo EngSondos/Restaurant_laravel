@@ -37,6 +37,20 @@ class ReservationController extends Controller
      return $this->sendData('',$reservations);
     }
 
+//waiter
+    public function getReservationByTableIdInDay(int $table_id)
+    {
+     $table =Table::find($table_id);
+     if(!$table)
+     {
+        return $this->error('This Table Not Exist');
+
+     }
+     $reservation =   Reservation::with(['table','customer'])->where('table_id','=',$table_id)->where('start_date',Carbon::now())->get();
+
+     return $this->sendData('',$reservation);
+    }
+
     public function getReservationByDate(GetByDateRequest $request)
     {
         //5 pm to 7 pm
@@ -53,7 +67,7 @@ class ReservationController extends Controller
         $reservation = new Reservation;
         $reservation->start_date = $request->input('start_date');
         $reservation->table_id = $request->input('table_id');
-        $reservation->customer_id = $request->input('customer_id'); //will change by login customer
+        $reservation->customer_id = auth()->user()->id; //will change by login customer
 
         if($reservation->save())
             return $this->success('Reservation Added Successfully');
@@ -100,11 +114,13 @@ class ReservationController extends Controller
 
     }
 
-    public function getReservationByCustomerId($customer_id) // will make by auth
+    public function getReservationByCustomerId()
     {
-        $reservtions =  Reservation::where('customer_id','=',$customer_id)->get();
+        $reservtions =  Reservation::where('customer_id','=',auth()->user()->id)->get();
         return $this->sendData('',$reservtions);
     }
+
+
 
     public function cancelReservation(int $id)
     {
