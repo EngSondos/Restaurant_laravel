@@ -5,6 +5,8 @@ namespace App\Http\Resources\Order;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\ProductResource;
+use App\Models\Ingredient;
+
 
 class OrderResource extends JsonResource
 {
@@ -18,6 +20,8 @@ class OrderResource extends JsonResource
 
         $products = $this->whenLoaded('products', function () {
             return $this->products->map(function ($product) {
+
+              
                 return [
                     'id' => $product->id,
                     'name' => $product->name,
@@ -28,7 +32,25 @@ class OrderResource extends JsonResource
             });
         });
         $order_products = $this->whenLoaded('products', function () {
-            return $this->products->map(function ($product) {
+            return $this->products->map(function ($product) { 
+              
+                $extras = [];
+                if ($product->extra) {
+                    if (is_array($product->extra)) {
+                        $extraIds = $product->extra;
+                    } else {
+                        $extraIds = explode(',', $product->extra);
+                    }
+                    foreach ($extraIds as $extraId) {
+                        $ingredient = Ingredient::find($extraId);
+                        if ($ingredient) {
+                            $extras[] = $ingredient->name;
+                        }
+                    }
+                }                        
+           
+
+
                 return [
                     'id' => $product->pivot->id,
                     'order_id' => $this->id,
@@ -36,6 +58,9 @@ class OrderResource extends JsonResource
                     'quantity' => $product->pivot->quantity,
                     'total_price' => $product->pivot->total_price,
                     'status' => $product->pivot->status,
+                    'extra' => $extras,
+
+
                 ];
             });
         });
