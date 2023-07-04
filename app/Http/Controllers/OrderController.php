@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Resources\Order\OrderResource;
 use App\Http\Resources\Table\TableResource;
+use App\Models\Ingredient;
+
 
 
 use App\Events\OrderCreated;
@@ -31,6 +33,7 @@ class OrderController extends Controller
     {
         $orders = Order::whereNotIn('status',['served','paid'])
         ->with('products')->paginate(8);
+        
         return OrderResource::collection($orders)
         ->additional(['message' => 'Orders Retrieved Successfully']);
 
@@ -53,6 +56,7 @@ class OrderController extends Controller
         $total_price = $request->input('total_price') * (1 + $tax) * (1 + $service_fee) - ($data['discount'] ?? 0);
         $data['total_price'] = $total_price;
 
+       
 
         $order= Order::create($data);
 
@@ -60,12 +64,15 @@ class OrderController extends Controller
         $products = $request->input('products');
 
         foreach ($products as $product) {
+            $extra = array_key_exists('extra', $product) ? $product['extra'] : null;
 
             $order->products()->attach($product['id'], [
                 'quantity' => $product['quantity'],
                 'total_price' => $product['total_price'],
                 'status' => 'progress',
             ]);
+            // dd($product['extra']);
+            
 
         }
         event(new OrderCreated($order));
