@@ -127,12 +127,7 @@ class UserController extends Controller
 }
 
 
-        public function UserDetails()
-        {
-            $user = auth()->user();
-            return $this->sendData('',new UserResource($user));
-    }
-        
+
 
 /**
  * Search for users by name.

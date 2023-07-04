@@ -26,32 +26,32 @@ use App\Http\Controllers\StaffAuthController;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
 
 // Route::apiResource('/ingredients',);
 
 
 
 // //Register & Login
-// Route::prefix('auth/customer')->controller(CustomerAuthController::class)->group(function () {
+Route::prefix('auth/customer')->controller(CustomerAuthController::class)->group(function () {
 
-//     Route::post('/login', 'login');
-//     Route::post('/register', 'register');
-//     Route::post('/logout', 'logout');
-//     Route::post('/refresh', 'refresh');
-//     Route::get('/user-profile', 'userProfile');
-// });
+    Route::post('/login', 'login');
+    Route::post('/register', 'register');
+    Route::post('/logout', 'logout');
+    Route::post('/refresh', 'refresh');
+    Route::get('/user-profile', 'userProfile');
+});
 
-// Route::prefix('auth/user')->controller(StaffAuthController::class)->group(function () {
+Route::prefix('auth/user')->controller(StaffAuthController::class)->group(function () {
 
-//     Route::post('/login', 'login');
-//     Route::post('/register', 'register');
-//     Route::post('/logout', 'logout');
-//     Route::post('/refresh', 'refresh');
-//     Route::get('/user-profile', 'userProfile');
-// });
+    Route::post('/login', 'login');
+    Route::post('/register', 'register');
+    Route::post('/logout', 'logout');
+    Route::post('/refresh', 'refresh');
+    Route::get('/user-profile', 'userProfile');
+});
 
 
 
