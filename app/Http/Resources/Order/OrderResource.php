@@ -30,6 +30,7 @@ class OrderResource extends JsonResource
         $order_products = $this->whenLoaded('products', function () {
             return $this->products->map(function ($product) {
                 return [
+                    'id' => $product->pivot->id,
                     'order_id' => $this->id,
                     'product_id' => $product->id,
                     'quantity' => $product->pivot->quantity,
