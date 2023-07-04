@@ -7,10 +7,12 @@ use App\Http\Requests\Product\UpdateProductIngredientRequest;
 use App\Http\Requests\Product\UpdateProductRequest;
 use App\Http\Services\Media;
 use App\Models\Category;
+use App\Models\Ingredient;
 use App\Models\Product;
 use App\Traits\ApiRespone;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Symfony\Component\Console\Input\Input;
 
 class ProductController extends Controller
 {
@@ -20,7 +22,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return Product::with('ingredients')->paginate(8);
+        return Product::paginate(8,['id','name','image','status'.'closed','total_price']);
     }
 
     /**
@@ -37,7 +39,7 @@ class ProductController extends Controller
         $product->name = $data['name'];
         $product->category_id = $request->category_id;
         $product->total_price = $request->total_price;
-        $product->extra=json_encode($request->extra);
+        $product->extra=$request->input('extra',null);
         $product->discount = $request->input('discount',null);
         $product->description = $request->input('description',null);
 
@@ -63,15 +65,14 @@ class ProductController extends Controller
         $product = Product::with('ingredients')->find($id);
 
 
-        // if( $product->extra)
-        // {
-        //     $extras= [];
-        //     foreach($product->extra as $extra){
-        //        $extras[$extra]= Ingredient::where('id',$extra)->get('name');
-        //     }
-        //     // dd($extras);
-        //     $product->extra = $extras;
-        // }
+        if( $product->extra)
+        {
+            $extras= [];
+            foreach($product->extra as $extra){
+               $extras[$extra]= Ingredient::where('id',$extra)->get('name');
+            }
+            $product->extra = $extras;
+        }
 
 
         if(!$product){
