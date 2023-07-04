@@ -22,7 +22,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return Product::paginate(8,['id','name','image','status'.'closed','total_price']);
+        return Product::paginate(8,['id','name','image','status','closed','total_price']);
     }
 
     /**
