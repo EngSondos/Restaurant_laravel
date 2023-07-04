@@ -12,6 +12,7 @@ use App\Models\Product;
 use App\Traits\ApiRespone;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Symfony\Component\Console\Input\Input;
 
 class ProductController extends Controller
 {
@@ -38,7 +39,7 @@ class ProductController extends Controller
         $product->name = $data['name'];
         $product->category_id = $request->category_id;
         $product->total_price = $request->total_price;
-        $product->extra=json_encode($request->extra);
+        $product->extra=$request->input('extra',null);
         $product->discount = $request->input('discount',null);
         $product->description = $request->input('description',null);
 
