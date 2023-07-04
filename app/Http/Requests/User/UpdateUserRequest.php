@@ -48,7 +48,18 @@ class UpdateUserRequest extends FormRequest
                 'min:8',
                 'regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
                         ],
-            'role' => 'in:' . implode(',', array_keys(User::$roleOptions)),
+            // 'role' => 'in:' . implode(',', array_keys(User::$roleOptions)),
         ];
+        $user = $this->route('user');
+        $loggedInUser = $this->user();
+        if ($loggedInUser->role != 'Admin' && $loggedInUser->id == $user->id) {
+            unset($rules['role']);
+        } else {
+          $rules ['role'] = 'in:' . implode(',', array_keys(User::$roleOptions));
+        }
+        return $rules;
+
+
+
     }
 }

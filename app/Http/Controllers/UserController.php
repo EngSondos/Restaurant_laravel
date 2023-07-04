@@ -85,9 +85,17 @@ class UserController extends Controller
         if(!$user){
             return $this->error('user not Exist');
         }
-        
-        $data = $request->except('image');
+        $loggedInUser = auth()->user();
 
+        if ($loggedInUser->role != 'Admin'){
+            if ($loggedInUser->id != $user->id){
+                return $this->error('You do not have permission to update this user');
+            }
+        
+        $data = $request->except('image','role');
+    } else {
+        $data = $request->except('image');
+    }
         if ($request->hasFile('image')) 
         {
             if ($user->image) {
