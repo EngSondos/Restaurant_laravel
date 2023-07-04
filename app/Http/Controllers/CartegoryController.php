@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Services\Media;
 use App\Models\Category;
+use App\Models\Product;
 use GuzzleHttp\Psr7\UploadedFile;
 
 use function PHPUnit\Framework\returnSelf;
@@ -76,6 +77,9 @@ class CartegoryController extends Controller
             $data['image'] = $imageName;
             Media::delete($category->image);
         }
+        //when the category is closed so all products should be closed
+        Product::query()->where('category_id', $category->id)->update($data['status'] == 0 ?['closed'=>1]:['closed'=>0]);
+        
         if (DB::table('categories')->where('id', '=', $category->id)->update($data))
             return $this->success('Category updated successfully');
         return $this->success('Category is not being updated');
@@ -89,7 +93,8 @@ class CartegoryController extends Controller
         $filteredproducts = DB::table('products')->select('*')->where('category_id', '=', $category->id)->get();
 
         if (sizeof($filteredproducts->all()) > 0) {
-            DB::table('categories')->where('id', '=', $category->id)->update(['status' => '0']);
+            DB::table('products')->where('category_id',$category->id)->update(['closed'=> 1]);
+            DB::table('categories')->where('id', $category->id)->update(['status' => '0']);
             return $this->success('Category cannot be deleted, but it\'s now unavialable',);
         } else {
             $category->delete();
@@ -108,4 +113,5 @@ class CartegoryController extends Controller
         select('name','image','id')->
         get();
     }
+
 }
