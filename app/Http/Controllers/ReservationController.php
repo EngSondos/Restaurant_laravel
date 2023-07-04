@@ -67,7 +67,9 @@ class ReservationController extends Controller
         $reservation = new Reservation;
         $reservation->start_date = $request->input('start_date');
         $reservation->table_id = $request->input('table_id');
-        $reservation->customer_id = auth()->user()->id; //will change by login customer
+        $reservation->customer_id = auth()->guard('customers')->id(); //will change by login customer
+        $reservation->order_id = $request->input('order_id');
+
 
         if($reservation->save())
             return $this->success('Reservation Added Successfully');
