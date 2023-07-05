@@ -30,8 +30,10 @@ class StoreOrderRequest extends FormRequest
                 'service_fee' => 'sometimes|numeric|max:1',
                 'status' => 'required|in:Pending,Accepted,Prepare,Complete,Served,Canceled,Paid',
                 'table_id' => 'required|exists:tables,id',
-                'user_id' => 'required|exists:users,id',
+                'user_id' => 'nullable|exists:users,id',
                 'customer_id' => 'nullable|exists:customers,id',
+                // 'reservation_id' => 'nullable|exists:reservations,id',
+
                 
             ];       
     }

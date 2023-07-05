@@ -6,6 +6,8 @@ use Illuminate\Http\Request;
 use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Resources\Order\OrderResource;
 use App\Http\Resources\Table\TableResource;
+use App\Models\Ingredient;
+use App\Models\Reservation;
 
 
 
@@ -55,11 +57,28 @@ class OrderController extends Controller
         $total_price = $request->input('total_price') * (1 + $tax) * (1 + $service_fee) - ($data['discount'] ?? 0);
         $data['total_price'] = $total_price;
 
+
+        $reservation = null;
+        if ($request->has('start_date') && $request->has('customer_id') && $request->has('table_id')) {
+            $reservationData = [
+                'start_date' => $request->input('start_date'),
+                'status' => 'progress',
+                'customer_id' => $request->input('customer_id'),
+                'table_id' => $request->input('table_id'),
+                'order_id' => null,
+            ];
+            $reservation = Reservation::create($reservationData);
+        }
+    
+
        
 
         $order= Order::create($data);
-
-
+    
+        if ($reservation) {
+            $reservation->order_id = $order->id;
+            $reservation->save();
+        }
         $products = $request->input('products');
 
         foreach ($products as $product) {
@@ -117,15 +136,11 @@ class OrderController extends Controller
 
 public function servedOrders()
 {
-    $orders = Order::with(['products','reservation'])->where('status', 'served')->get();
-    
-    if($orders->isEmpty()){
+    $orders = Order::with('products')->where('status', 'served')->get();
+     if($orders->isEmpty()){
         return $this->error('no served orders exist');
     }
-  
-
-    return $this->sendData('', OrderResource::collection($orders));
-    
+     return $this->sendData('', OrderResource::collection($orders));
 }
 
 

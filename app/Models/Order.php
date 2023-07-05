@@ -12,8 +12,7 @@ use App\Events\OrderCreated;
 class Order extends Model
 {
     use HasFactory,SoftDeletes;
-    protected $with = ['reservation'];
-
+    
 
     protected $fillable = [
         "total_price" , "status" , "user_id" , "table_id" , "customer_id","discount","tax","service_fee","reservation_id"
@@ -32,9 +31,9 @@ class Order extends Model
             ->withPivot(['quantity', 'total_price', 'status','id']);
     }
 
-    public function reservation()
+    public function reservations()
     {
-        return $this->belongsTo(Reservation::class);
+        return $this->belongsToMany(Reservation::class);
     }
 
 
