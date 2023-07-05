@@ -65,33 +65,19 @@ class ProductController extends Controller
         $product = Product::with('ingredients')->find($id);
 
 
+        if( $product->extra)
+        {
+            $extras= [];
+            foreach($product->extra as $extra){
+               $extras[$extra]= Ingredient::where('id',$extra)->get('name');
+            }
+            $product->extra = $extras;
+        }
 
 
         if(!$product){
             return $this->error('This Product Not Exist');
         }
-
-        // if( $product->extra)
-        // {
-        //     $extras= [];
-        //     foreach($product->extra as $extra){
-        //        $extras[$extra]= Ingredient::where('id',$extra)->pluck('name');
-        //     }
-        //     $product->extra = $extras;
-        // }
-
-        if( $product->extra)
-        {
-            $extras= [];
-            foreach($product->extra as $extra){
-               $extras[$extra]= [
-               'name'=>Ingredient::where('id',$extra)->pluck('name')[0],
-               'id'=>$extra
-               ];
-            }
-            $product->extra = $extras;
-        }
-
         return $this->sendData('',$product);
     }
 
@@ -104,7 +90,6 @@ class ProductController extends Controller
         if(!$product){
             return $this->error('This Product Not Exist');
         }
-        // dd($request);
         $this->checkCategory($request->category_id);
 
         $data = $request->except('image');
@@ -117,7 +102,7 @@ class ProductController extends Controller
        if( $product->update($data))
        {
         $product->UpdateStaus();
-        return $this->sendData('Product Update Succesfully',$product);
+        return $this->success('Product Update Succesfully');
        }
 
     }
