@@ -104,6 +104,7 @@ class ProductController extends Controller
         if(!$product){
             return $this->error('This Product Not Exist');
         }
+        // dd($request);
         $this->checkCategory($request->category_id);
 
         $data = $request->except('image');
