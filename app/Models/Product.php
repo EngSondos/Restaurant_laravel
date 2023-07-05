@@ -14,7 +14,9 @@ class Product extends Model
         "total_price"  ,
         "image",
         "category_id",
-        "extra"
+        "extra",
+        'discount',
+        'description'
     ];
     protected $casts = [
         'extra' => 'array',
@@ -47,7 +49,7 @@ class Product extends Model
     {
         if($this->closed)
         {
-           
+
             $this->status=!$this->status;
             return $this->save();
 
