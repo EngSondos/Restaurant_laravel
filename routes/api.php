@@ -34,24 +34,24 @@ use App\Http\Controllers\StaffAuthController;
 
 
 
-// //Register & Login
-// Route::prefix('auth/customer')->controller(CustomerAuthController::class)->group(function () {
+//Register & Login
+Route::prefix('auth/customer')->controller(CustomerAuthController::class)->group(function () {
 
-//     Route::post('/login', 'login');
-//     Route::post('/register', 'register');
-//     Route::post('/logout', 'logout');
-//     Route::post('/refresh', 'refresh');
-//     Route::get('/user-profile', 'userProfile');
-// });
+    Route::post('/login', 'login');
+    Route::post('/register', 'register');
+    Route::post('/logout', 'logout');
+    Route::post('/refresh', 'refresh');
+    Route::get('/user-profile', 'userProfile');
+});
 
-// Route::prefix('auth/user')->controller(StaffAuthController::class)->group(function () {
+Route::prefix('auth/user')->controller(StaffAuthController::class)->group(function () {
 
-//     Route::post('/login', 'login');
-//     Route::post('/register', 'register');
-//     Route::post('/logout', 'logout');
-//     Route::post('/refresh', 'refresh');
-//     Route::get('/user-profile', 'userProfile');
-// });
+    Route::post('/login', 'login');
+    Route::post('/register', 'register');
+    Route::post('/logout', 'logout');
+    Route::post('/refresh', 'refresh');
+    Route::get('/user-profile', 'userProfile');
+});
 
 
 
@@ -195,16 +195,16 @@ use App\Http\Controllers\StaffAuthController;
 //     Route::delete('/{category}', 'destroy');
 // });
 
-// //Cart API Methods For
-// Route::prefix('cart')->middleware(["auth:users","role:Waiter"])->controller(CartController::class)->group(function () {
-//     Route::get('/', 'index');
+//Cart API Methods For
+Route::prefix('cart')->middleware(["auth:users","role:Waiter"])->controller(CartController::class)->group(function () {
+    Route::get('/', 'index');
 
-//     Route::post('/', 'store');
+    Route::post('/', 'store');
 
-//     Route::put('/', 'update');
+    Route::put('/', 'update');
 
-//     Route::delete('/', 'destroy');
-// });
+    Route::delete('/', 'destroy');
+});
 
 //-------------------------------------------------------Without Middelwares---------------------------------------------------
 
@@ -334,13 +334,13 @@ Route::prefix('category')->controller(CartegoryController::class)->group(functio
     Route::delete('/{category}', 'destroy');
 });
 
-//Cart API Methods For
-Route::prefix('cart')->controller(CartController::class)->group(function () {
-    Route::get('/', 'index');
+// //Cart API Methods For
+// Route::prefix('cart')->controller(CartController::class)->group(function () {
+//     Route::get('/', 'index');
 
-    Route::post('/', 'store');
+//     Route::post('/', 'store');
 
-    Route::put('/', 'update');
+//     Route::put('/', 'update');
 
-    Route::delete('/', 'destroy');
-});
+//     Route::delete('/', 'destroy');
+// });
