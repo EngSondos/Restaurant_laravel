@@ -22,6 +22,7 @@ class StoreOrderRequest extends FormRequest
     public function rules(): array
     {
             return [
+                
                 'total_price' => 'required|numeric|min:0',
                 'discount' => 'nullable|numeric',
                 'tax'=> 'sometimes|numeric|max:1',

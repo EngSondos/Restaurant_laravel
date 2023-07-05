@@ -12,7 +12,8 @@ use App\Events\OrderCreated;
 class Order extends Model
 {
     use HasFactory,SoftDeletes;
-    
+    protected $with = ['reservation'];
+
 
     protected $fillable = [
         "total_price" , "status" , "user_id" , "table_id" , "customer_id","discount","tax","service_fee","reservation_id"
@@ -20,6 +21,8 @@ class Order extends Model
 
     protected $attributes = [
         'total_price' => 0,
+        // 'reservation_id' => null,
+
     ];
 
 
