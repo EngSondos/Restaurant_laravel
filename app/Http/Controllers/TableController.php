@@ -123,5 +123,19 @@ class TableController extends Controller
     }
 
 
+    public function searchByGuestNumbers(Request $request)
+{
+    $query = $request->input('quest');
+
+
+    $tables = Table::where('guest_numbers', '=', $query)->get();
+
+    if($tables->isEmpty()){
+
+        return $this->error('No Table with this guest numbers');
+    }
+    return TableResource::collection($tables)
+        ->additional(['message' => 'Tables Retrieved Successfully']);
+}
 
 }

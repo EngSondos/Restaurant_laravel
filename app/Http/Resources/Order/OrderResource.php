@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 use App\Http\Resources\ProductResource;
 use App\Models\Ingredient;
+use App\Models\Reservation;
 
 
 class OrderResource extends JsonResource
@@ -18,6 +19,8 @@ class OrderResource extends JsonResource
     public function toArray(Request $request): array
     {
 
+
+     
         $products = $this->whenLoaded('products', function () {
             return $this->products->map(function ($product) {
 
@@ -49,7 +52,7 @@ class OrderResource extends JsonResource
                     }
                 }                        
            
-
+             
 
                 return [
                     'id' => $product->pivot->id,
@@ -65,12 +68,12 @@ class OrderResource extends JsonResource
             });
         });
 
-
+    $reservation_id = $this->whenLoaded('reservation', function () {
+        return $this->reservation->id;
+    });
         return [
             'id' => $this->id,
-            'reservation_id' => $this->whenLoaded('reservation', function () {
-                return $this->reservation->id;
-            }),
+            'reservation_id' =>$reservation_id,
             'total_price' => $this->total_price,
             'discount' => $this->discount,
             'tax' => $this->tax,
