@@ -57,30 +57,21 @@ class OrderController extends Controller
         $total_price = $request->input('total_price') * (1 + $tax) * (1 + $service_fee) - ($data['discount'] ?? 0);
         $data['total_price'] = $total_price;
 
-
-        $reservation = null;
-        if ($request->has('start_date') && $request->has('customer_id') && $request->has('table_id')) {
-            $reservationData = [
-                'start_date' => $request->input('start_date'),
-                'status' => 'progress',
-                'customer_id' => $request->input('customer_id'),
-                'table_id' => $request->input('table_id'),
-                'order_id' => null,
-            ];
-            $reservation = Reservation::create($reservationData);
-        }
+        $customer_id = $request->input('customer_id');
+        $user_id = $request->input('user_id');
+        $reservation_id = $request->input('reservation_id');
     
+        if ($customer_id && $user_id ) {
+            $accepted_reservation = Reservation::where('customer_id', $customer_id)->where('status', 'accepted')->where('id', $reservation_id)->first(); 
+            if ($accepted_reservation) {
+                $data['table_id'] = $accepted_reservation->table_id;
+                $data['customer_id'] = $customer_id;
 
-       
+             $order= Order::create($data); 
+             $accepted_reservation->order_id = $order->id;
+             $accepted_reservation->save();
 
-        $order= Order::create($data);
-    
-        if ($reservation) {
-            $reservation->order_id = $order->id;
-            $reservation->save();
-        }
         $products = $request->input('products');
-
         foreach ($products as $product) {
             $extra = array_key_exists('extra', $product) ? $product['extra'] : null;
 
@@ -95,14 +86,61 @@ class OrderController extends Controller
         }
         event(new OrderCreated($order));
 
+        return $this->success('Order added successfully', Response::HTTP_CREATED);
 
-        if ($order){
-            return $this->success('order added successfully',Response::HTTP_CREATED);
+    } else {
+        $order = Order::create($data);
+    
+        foreach ($request->input('products') as $product) {
+            $extra = array_key_exists('extra', $product) ? $product['extra'] : null;
+            $order->products()->attach($product['id'], [
+                'quantity' => $product['quantity'],
+                'total_price' => $product['total_price'],
+                'status' => 'progress',
+            ]);
+        }
 
-         }
-         return $this->error('order not added ',Response::HTTP_CONFLICT);
-
+        event(new OrderCreated($order));
+        return $this->success('Order added successfully', Response::HTTP_CREATED);
     }
+}
+
+        $reservation = null;
+        if ($request->has('start_date') && $request->has('table_id')) {
+            $reservationData = [
+                'start_date' => $request->input('start_date'),
+                'status' => 'progress',
+                'customer_id' => $customer_id,
+                'table_id' => $request->input('table_id'),
+                'order_id' => null,
+            ];
+            $reservation = Reservation::create($reservationData);
+
+            $data['reservation_id'] = $reservation->id;
+            $data['table_id'] = $request->input('table_id');
+        }
+
+        $data['customer_id'] = $customer_id;
+        $order = Order::create($data);
+
+        if ($reservation) {
+            $reservation->order_id = $order->id;
+            $reservation->save();
+        }
+
+        foreach ($request->input('products') as $product) {
+            $extra = array_key_exists('extra', $product) ? $product['extra'] : null;
+            $order->products()->attach($product['id'], [
+                'quantity' => $product['quantity'],
+                'total_price' => $product['total_price'],
+                'status' => 'progress',
+            ]);
+        }
+
+        event(new OrderCreated($order));
+        return $this->success('Order added successfully', Response::HTTP_CREATED);
+
+            }
 
 
     /**
@@ -136,11 +174,13 @@ class OrderController extends Controller
 
 public function servedOrders()
 {
-    $orders = Order::with('products')->where('status', 'served')->get();
-     if($orders->isEmpty()){
+    $orders = Order::with(['products','reservation'])->where('status', 'served')->get();
+
+    if($orders->isEmpty()){
         return $this->error('no served orders exist');
     }
-     return $this->sendData('', OrderResource::collection($orders));
+
+    return $this->sendData('', OrderResource::collection($orders));
 }
 
 
