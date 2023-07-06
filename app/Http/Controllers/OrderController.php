@@ -89,6 +89,9 @@ class OrderController extends Controller
                 $data['reservation_id'] = $reservation_id;
             }
         }
+        if ($user_id) {
+            $data['status'] = 'prepare';
+        }
         $order = Order::create($data);
         if ($accepted_reservation) {
             $accepted_reservation->order_id = $order->id;
