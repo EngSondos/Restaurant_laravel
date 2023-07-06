@@ -15,14 +15,17 @@ use Illuminate\Http\Request;
 class CartController extends Controller
 {
     use ApiRespone;
+    private $user_id ;
+    public function __construct() {
+        $this->user_id = auth()->user()->id;
+    }
     /**
      * Display all stored products
      */
     public function index()
     {
-        $user_id = '1';
-
-        $carts = Cart::where('user_id', $user_id)->first();
+        // dd($this->user_id);
+        $carts = Cart::where('user_id', $this->user_id)->first();
 
         if(!$carts) {
             return $this->success('no cards to be showen');
@@ -38,9 +41,10 @@ class CartController extends Controller
      */
     public function store(StoreCartRequest $req)
     {
-        $userid = 1;
+        // dd($this->user_id);
+
         //check if this product already exists or not
-        if (DB::table('cart_product')->where('product_id', '=', $req['product_id'], 'and', 'user_id', '=', $userid)->exists()) {
+        if (DB::table('cart_product')->where('product_id', '=', $req['product_id'])->where('user_id', '=', $this->user_id)->exists()) {
             return $this->error('this product is already in the cart');
         }
         // Get the product information
@@ -48,7 +52,7 @@ class CartController extends Controller
 
         // Create a new cart item
         $cart_item = CartProduct::create([
-            'user_id' => $userid,
+            'user_id' => $this->user_id,
             'product_id' => $req['product_id'],
             'total_price' => $product->total_price,
             'quantity' => 1,
@@ -56,7 +60,7 @@ class CartController extends Controller
         ]);
 
         // Calculate the total price on the cart
-        $total_price_on_cart = $this->countTotalPrice($userid);
+        $total_price_on_cart = $this->countTotalPrice($this->user_id);
 
         // Return a success response
         return $this->sendData('Product has been added to the cart.', $total_price_on_cart);
@@ -67,7 +71,6 @@ class CartController extends Controller
      */
     public function update(UpdateCartRequest $req)
     {
-        $userid = 1;
         //get the card that the user interact with 
         $cartproduct = CartProduct::with('product.ingredients')->findOrFail( $req['id']);
         //get the ingredients of this product
@@ -91,7 +94,7 @@ class CartController extends Controller
             'total_price' => $cardQTY * $cartproduct->product->total_price
         ]);
         //count the total price of all demand products 
-        $this->countTotalPrice($userid);
+        $this->countTotalPrice($this->user_id);
         //send success message to the user tell him that the cart product quantity has been updated
         return $this->success('The quantity has been updated');
         
@@ -102,7 +105,6 @@ class CartController extends Controller
      */
     public function destroy(Request $request)
     {
-        $userid = 1;
         if($request['id']){
             $cart_product =  DB::table('cart_product')->where('id',$request['id'])->exists();
             if(!$cart_product){
@@ -110,25 +112,25 @@ class CartController extends Controller
             }
             DB::table('cart_product')->where('cart_product.id', $request['id'])->delete();
 
-            $total_price_on_cart = $this->countTotalPrice($userid);
+            $total_price_on_cart = $this->countTotalPrice($this->user_id);
 
             if ($total_price_on_cart == 0) {
 
-                DB::table('carts')->where('user_id', '=', $userid)->delete();
+                DB::table('carts')->where('user_id', '=', $this->user_id)->delete();
 
                 return $this->success('No Products In The Cart');
             }
 
-            DB::table('carts')->where('user_id', '=', $userid)->update([
+            DB::table('carts')->where('user_id', '=', $this->user_id)->update([
                 'total_price'=>$total_price_on_cart,
                 'updated_at' => now()
             ]);
 
             return $this->success('Product Deleted Successfully From Cart');
         }
-        DB::table('cart_product')->where('cart_product.user_id', $userid)->delete();
+        DB::table('cart_product')->where('cart_product.user_id', $this->user_id)->delete();
 
-        DB::table('carts')->where('user_id', '=', $userid)->delete();
+        DB::table('carts')->where('user_id', '=', $this->user_id)->delete();
 
         return $this->success('No Products In The Cart');
         
