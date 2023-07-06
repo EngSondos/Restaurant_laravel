@@ -34,7 +34,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 
 
-// //Register & Login
+//Register & Login
 Route::prefix('auth/customer')->controller(CustomerAuthController::class)->group(function () {
 
     Route::post('/login', 'login');
@@ -195,16 +195,16 @@ Route::prefix('auth/user')->controller(StaffAuthController::class)->group(functi
 //     Route::delete('/{category}', 'destroy');
 // });
 
-// //Cart API Methods For
-// Route::prefix('cart')->middleware(["auth:users","role:Waiter"])->controller(CartController::class)->group(function () {
-//     Route::get('/', 'index');
+//Cart API Methods For
+Route::prefix('cart')->middleware(["auth:users","role:Waiter"])->controller(CartController::class)->group(function () {
+    Route::get('/', 'index');
 
-//     Route::post('/', 'store');
+    Route::post('/', 'store');
 
-//     Route::put('/', 'update');
+    Route::put('/', 'update');
 
-//     Route::delete('/', 'destroy');
-// });
+    Route::delete('/', 'destroy');
+});
 
 //-------------------------------------------------------Without Middelwares---------------------------------------------------
 
@@ -334,13 +334,13 @@ Route::prefix('category')->controller(CartegoryController::class)->group(functio
     Route::delete('/{category}', 'destroy');
 });
 
-//Cart API Methods For
-Route::prefix('cart')->controller(CartController::class)->group(function () {
-    Route::get('/', 'index');
+// //Cart API Methods For
+// Route::prefix('cart')->controller(CartController::class)->group(function () {
+//     Route::get('/', 'index');
 
-    Route::post('/', 'store');
+//     Route::post('/', 'store');
 
-    Route::put('/', 'update');
+//     Route::put('/', 'update');
 
-    Route::delete('/', 'destroy');
-});
+//     Route::delete('/', 'destroy');
+// });

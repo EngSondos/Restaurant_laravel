@@ -67,11 +67,7 @@ class ReservationController extends Controller
         $reservation = new Reservation;
         $reservation->start_date = $request->input('start_date');
         $reservation->table_id = $request->input('table_id');
-
-        $reservation->customer_id = $request->input('customer_id'); //will change by login customer
-
-        // $reservation->customer_id = auth()->guard('customers')->id(); //will change by login customer
-        $reservation->order_id = $request->input('order_id');
+        $reservation->customer_id = auth()->guard('customers')->id(); //will change by login customer
 
 
         if($reservation->save())
@@ -90,7 +86,10 @@ class ReservationController extends Controller
 
         //get resevation for this week
         $reservations = Reservation::where('table_id',$table_id)
-        ->whereBetween('start_date',[$startDate,$endDate])->whereNot('status','canceled')->orderby('start_date')
+        ->whereBetween('start_date',[$startDate,$endDate])
+        ->whereNot('status','canceled')
+        ->whereNot('status','completed')
+        ->orderby('start_date')
         ->pluck(DB::raw("DATE_FORMAT(start_date, '%Y-%m-%d') as start_date"));
 
         //all is reserved
