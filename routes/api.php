@@ -14,7 +14,7 @@ use App\Http\Controllers\TableController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\OrderProductController;
 use App\Http\Controllers\StaffAuthController;
-
+use App\Http\Controllers\PaymentController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -32,7 +32,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Route::apiResource('/ingredients',);
 
-
+Route::post('payment',[PaymentController::class , 'checkout']);
 
 //Register & Login
 Route::prefix('auth/customer')->controller(CustomerAuthController::class)->group(function () {
@@ -339,13 +339,13 @@ Route::prefix('category')->controller(CartegoryController::class)->group(functio
     Route::delete('/{category}', 'destroy');
 });
 
-// //Cart API Methods For
-// Route::prefix('cart')->controller(CartController::class)->group(function () {
-//     Route::get('/', 'index');
+//Cart API Methods For
+Route::prefix('cart')->controller(CartController::class)->group(function () {
+    Route::get('/', 'index');
 
-//     Route::post('/', 'store');
+    Route::post('/', 'store');
 
-//     Route::put('/', 'update');
+    Route::put('/', 'update');
 
-//     Route::delete('/', 'destroy');
-// });
+    Route::delete('/', 'destroy');
+});
