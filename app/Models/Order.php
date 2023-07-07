@@ -24,6 +24,10 @@ class Order extends Model
 
     ];
 
+    protected $dispatchesJobs = [
+        'created' => ScheduleOrderPrepare::class,
+    ];
+
 
     public function products()
     {

@@ -46,8 +46,6 @@ class OrderController extends Controller
 
 
 
-
-
     public function store(StoreOrderRequest $request)
     {
         $data = $request->all();
@@ -71,12 +69,16 @@ class OrderController extends Controller
                 'table_id' => $request->input('table_id'),
                 'order_id' => null,
             ];
+
+            // dd(now());
+            // dd($request->input('start_date'));
             $reservation = Reservation::create($reservationData);
 
             $data['reservation_id'] = $reservation->id;
             $data['table_id'] = $request->input('table_id');
     
             $accepted_reservation = $reservation;
+            
         } else if ($customer_id && $user_id && $reservation_id) {
             $accepted_reservation = Reservation::where('customer_id', $customer_id)
                 ->where('status', 'accepted')
