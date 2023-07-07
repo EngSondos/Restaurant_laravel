@@ -93,7 +93,7 @@ class TableController extends Controller
         })->get();
 
         if ($tables->isEmpty()){
-            return $this->error('No Tables have served orders');
+            return $this->success('No Tables have served orders');
 
         }
         return TableResource::collection($tables)
