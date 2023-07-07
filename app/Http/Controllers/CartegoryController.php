@@ -11,7 +11,9 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Services\Media;
 use App\Models\Category;
 use App\Models\Product;
+use Faker\Core\Number;
 use GuzzleHttp\Psr7\UploadedFile;
+use Ramsey\Uuid\Type\Integer;
 
 use function PHPUnit\Framework\returnSelf;
 
@@ -77,13 +79,32 @@ class CartegoryController extends Controller
             $data['image'] = $imageName;
             Media::delete($category->image);
         }
-        //when the category is closed so all products should be closed
-        Product::query()->where('category_id', $category->id)->update($data['status'] == 0 ?['closed'=>1]:['closed'=>0]);
         
-        if (DB::table('categories')->where('id', '=', $category->id)->update($data))
+        if (DB::table('categories')->where('id', $category->id)->update($data))
             return $this->success('Category updated successfully');
         return $this->success('Category is not being updated');
     }
+
+    /*
+    ** Change Category Status
+    */
+    public function changeStatus(Request $req, Category $category)
+    {
+        $data = $req->except('_method');
+
+        if(!$data)
+            return $this->error('status is required');
+
+        $filteredproducts = DB::table('products')->select('*')->where('category_id', '=', $category->id)->get();
+
+        if ($filteredproducts->all()) 
+            DB::table('products')->where('category_id',$category->id)->update(['closed'=> !(integer)$data['status']]);
+
+        Category::query()->where('id','=', $category->id)->update(['status'=>$data['status']]);
+
+        return $this->success('Category now is '.((integer)$data['status']? 'on' : 'off'));
+    }
+
 
     /*
     ** Delete Category

@@ -196,15 +196,15 @@ Route::prefix('auth/user')->controller(StaffAuthController::class)->group(functi
 // });
 
 //Cart API Methods For
-Route::prefix('cart')->middleware(["auth:users","role:Waiter"])->controller(CartController::class)->group(function () {
-    Route::get('/', 'index');
+// Route::prefix('cart')->middleware(["auth:users","role:Waiter"])->controller(CartController::class)->group(function () {
+//     Route::get('/', 'index');
 
-    Route::post('/', 'store');
+//     Route::post('/', 'store');
 
-    Route::put('/', 'update');
+//     Route::put('/', 'update');
 
-    Route::delete('/', 'destroy');
-});
+//     Route::delete('/', 'destroy');
+// });
 
 //-------------------------------------------------------Without Middelwares---------------------------------------------------
 
@@ -331,6 +331,8 @@ Route::prefix('category')->controller(CartegoryController::class)->group(functio
     Route::get('/{category}/edit', 'edit');
 
     Route::put('/{category}', 'update');
+
+    Route::put('/{category}/status', 'changeStatus');
 
     Route::get('/show', 'show');
 
