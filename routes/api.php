@@ -314,6 +314,10 @@ Route::prefix('orders')->controller(OrderController::class)->group(function () {
 
     Route::post('served/{order_id}', 'markOrderAsServed');
 
+    Route::post('paid/{order_id}', 'markOrderAsPaid');
+
+
+
     Route::put('kitchen/{id}', 'changeOrderStatus');
 });
 

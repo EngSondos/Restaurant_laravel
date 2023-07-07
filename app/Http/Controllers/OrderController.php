@@ -218,7 +218,22 @@ public function servedOrders()
 
 
 
+        // change status fot the cashier
 
+        public function markOrderAsPaid(int $orderId)
+        {
+            $order = Order::find($orderId);
+            if (!$order) {
+                return response()->json(['error' => 'Order not found'], 404);
+            }
+
+            $order->status = 'paid';
+            if (!$order->save()) {
+                return $this->error('Failed to update order status');
+            }
+
+            return $this->success('Order status updated to paid');
+        }
 
 
 
