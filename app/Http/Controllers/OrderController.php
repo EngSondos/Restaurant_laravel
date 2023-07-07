@@ -200,20 +200,24 @@ public function servedOrders()
 
             // change status for the waiter
 
-        public function UpdateOrderStatus(int $order_id,string $new_status)
-        {
-            try{
-                $order = Order::findOrFail($order_id);
-                } catch (ModelNotFoundException $exception){
-                    return $this->error('Order not found', Response::HTTP_NOT_FOUND);
-                }
-                $valid_statuses = ['Pending', 'Accepted', 'Prepare', 'Complete', 'Served', 'Canceled', 'Paid'];
-                if (!in_array($new_status, $valid_statuses)) {
-                    return response()->json(['message' => 'Invalid status'], Response::HTTP_BAD_REQUEST);
-                }
-                $order->update(['status'=>$new_status]);
-                return $this->success('Order status updated successfully');
-        }
+
+    public function markOrderAsServed(int $orderId)
+{
+    $order = Order::find($orderId);
+    if (!$order) {
+        return response()->json(['error' => 'Order not found'], 404);
+    }
+
+    $order->status = 'served';
+    if (!$order->save()) {
+        return $this->error('Failed to update order status');
+    }
+
+    return $this->success('Order status updated to served');
+}
+
+
+
 
 
 

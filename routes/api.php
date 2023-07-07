@@ -308,13 +308,11 @@ Route::prefix('orders')->controller(OrderController::class)->group(function () {
 
     Route::get('served', 'servedOrders');
 
-
-
     Route::get('/{id}', 'show');
 
     Route::get('tables/{id}', 'getOrderTable');
 
-    Route::post('/{order_id}/status/{new_status}', 'UpdateOrderStatus');
+    Route::post('served/{order_id}', 'markOrderAsServed');
 
     Route::put('kitchen/{id}', 'changeOrderStatus');
 });
