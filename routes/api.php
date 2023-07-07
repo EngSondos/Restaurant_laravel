@@ -281,6 +281,7 @@ Route::prefix('tables')->controller(TableController::class)->group(function () {
     Route::get('search', 'searchByGuestNumbers');
 
     Route::get('available', 'getAvailableTables');
+    Route::get('served', 'getTablesWithServedOrders');
 
 
     Route::get('/{id}', 'show');
@@ -290,6 +291,8 @@ Route::prefix('tables')->controller(TableController::class)->group(function () {
     Route::get('status/{id}', 'changeStatus');
 
     Route::get('available/inday', 'availbeTablesInTheDay');
+
+
 
 });
 

@@ -84,6 +84,24 @@ class TableController extends Controller
     
     }
 
+    public function getTablesWithServedOrders()
+    {
+        $status = 'served';
+        $tables = Table::whereHas('orders',function ($query) use ($status){
+
+            $query->where('status',$status);
+        })->get();
+
+        if ($tables->isEmpty()){
+            return $this->error('No Tables have served orders');
+
+        }
+        return TableResource::collection($tables)
+        ->additional(['message' => 'Tables with Served orders retrieved successfully']);
+    }
+
+
+
     /**
      * Remove the specified resource from storage.
      */
