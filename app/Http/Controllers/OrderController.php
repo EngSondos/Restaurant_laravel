@@ -161,22 +161,22 @@ public function servedOrders()
 
 
 
-    public function getTablesWithPreparedOrders()
+    public function getTablesWithPreparedOrCompleteOrders()
     {
-        $tableIds = Order::where('status', '=', 'Prepare')->pluck('table_id')->unique();
+        $tableIds = Order::whereIn('status',['Prepare','Complete'])->pluck('table_id')->unique();
 
         if ($tableIds->isEmpty()) {
-            return $this->error('No tables found with prepared orders');
+            return $this->error('No tables found with prepared or completed orders');
         }
 
         $tables = Table::whereIn('id', $tableIds)->get();
 
         return TableResource::collection($tables)
-            ->additional(['message' => 'Tables with prepared orders retrieved successfully']);
+            ->additional(['message' => 'Tables with prepared and completed orders retrieved successfully']);
     }
 
 
-    public function getOrderTable($table_id)
+    public function getOrderOrCompleteTable($table_id)
     {
 
         try{
@@ -185,14 +185,14 @@ public function servedOrders()
             return $this->error('Table not found', Response::HTTP_NOT_FOUND);
         }
 
-        $prepareOrders = Order::where('table_id', '=', $table_id)->where('status','=','Prepare')->with('products')->get();
+        $prepareOrders = Order::where('table_id', '=', $table_id)->whereIn('status',['Prepare','Complete'])->with('products')->get();
 
         if ($prepareOrders->isEmpty()) {
-            return $this->error('No prepared orders found for this table');
+            return $this->error('No prepared nor completed orders found for this table');
         }
 
         return OrderResource::collection($prepareOrders)
-            ->additional(['message' => 'Prepared orders for table '.$table_id.' retrieved successfully']);
+            ->additional(['message' => 'Prepared or Completed orders for table '.$table_id.' retrieved successfully']);
     }
 
 

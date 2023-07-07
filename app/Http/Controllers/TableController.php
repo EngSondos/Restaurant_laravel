@@ -134,7 +134,7 @@ class TableController extends Controller
         $tables = Table::with('orders')->whereHas('orders',function($query) use ($today)
         {
 
-            $query->whereDate('created_at',$today)->whereIn('status',['paid','canceled']);
+            $query->whereDate('created_at',$today)->whereIn('status',['paid','canceled','pending']);
 
         })->orWhereDoesntHave('orders')->get();
         return $this->sendData('availbe Tables In The Day', TableResource::collection($tables));

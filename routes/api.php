@@ -302,7 +302,7 @@ Route::prefix('orders')->controller(OrderController::class)->group(function () {
 
     Route::post('', 'store');
 
-    Route::get('/tables/prepare', 'getTablesWithPreparedOrders');
+    Route::get('/tables/prepare/complete', 'getTablesWithPreparedOrCompleteOrders');
 
     Route::get('prepare', 'prepareOrders');
 
@@ -310,7 +310,7 @@ Route::prefix('orders')->controller(OrderController::class)->group(function () {
 
     Route::get('/{id}', 'show');
 
-    Route::get('tables/{id}', 'getOrderTable');
+    Route::get('tables/{id}', 'getOrderOrCompleteTable');
 
     Route::post('served/{order_id}', 'markOrderAsServed');
 
