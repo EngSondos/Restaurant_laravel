@@ -15,12 +15,15 @@ class Order extends Model
     
 
     protected $fillable = [
-        "total_price" , "status" , "user_id" , "table_id" , "customer_id","discount","tax","service_fee","reservation_id"
+        "total_price" , "status" , "user_id" , "table_id" , "customer_id","discount","tax","service_fee",
     ];
 
     protected $attributes = [
         'total_price' => 0,
+        // 'reservation_id' => null,
+
     ];
+
 
 
     public function products()

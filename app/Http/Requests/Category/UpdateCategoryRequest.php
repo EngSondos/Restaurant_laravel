@@ -25,8 +25,7 @@ class UpdateCategoryRequest extends FormRequest
         
         return [
             'name'  => 'string|required|max:50|unique:categories,name,'.$categoryId,
-            'image' => 'required|max:1000|mimes:jpg,png,jpeg,gif',
-            'status'=> 'required|in:0,1'
+            'image' => 'required|max:1000|mimes:jpg,png,jpeg,gif'
         ];
     }
 }

@@ -26,9 +26,9 @@ use App\Http\Controllers\StaffAuthController;
 |
 */
 
-// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//     return $request->user();
-// });
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+    return $request->user();
+});
 
 // Route::apiResource('/ingredients',);
 
@@ -196,15 +196,15 @@ Route::prefix('auth/user')->controller(StaffAuthController::class)->group(functi
 // });
 
 //Cart API Methods For
-Route::prefix('cart')->middleware(["auth:users","role:Waiter"])->controller(CartController::class)->group(function () {
-    Route::get('/', 'index');
+// Route::prefix('cart')->middleware(["auth:users","role:Waiter"])->controller(CartController::class)->group(function () {
+//     Route::get('/', 'index');
 
-    Route::post('/', 'store');
+//     Route::post('/', 'store');
 
-    Route::put('/', 'update');
+//     Route::put('/', 'update');
 
-    Route::delete('/', 'destroy');
-});
+//     Route::delete('/', 'destroy');
+// });
 
 //-------------------------------------------------------Without Middelwares---------------------------------------------------
 
@@ -278,8 +278,10 @@ Route::prefix('tables')->controller(TableController::class)->group(function () {
     Route::get('', 'index');
 
     Route::post('', 'store');
+    Route::get('search', 'searchByGuestNumbers');
 
     Route::get('available', 'getAvailableTables');
+
 
     Route::get('/{id}', 'show');
 
@@ -288,6 +290,7 @@ Route::prefix('tables')->controller(TableController::class)->group(function () {
     Route::get('status/{id}', 'changeStatus');
 
     Route::get('available/inday', 'availbeTablesInTheDay');
+
 });
 
 //Orders API Methods For Waiter
@@ -329,18 +332,20 @@ Route::prefix('category')->controller(CartegoryController::class)->group(functio
 
     Route::put('/{category}', 'update');
 
+    Route::put('/{category}/status', 'changeStatus');
+
     Route::get('/show', 'show');
 
     Route::delete('/{category}', 'destroy');
 });
 
 // //Cart API Methods For
-// Route::prefix('cart')->controller(CartController::class)->group(function () {
-//     Route::get('/', 'index');
+Route::prefix('cart')->controller(CartController::class)->group(function () {
+    Route::get('/', 'index');
 
-//     Route::post('/', 'store');
+    Route::post('/', 'store');
 
-//     Route::put('/', 'update');
+    Route::put('/', 'update');
 
-//     Route::delete('/', 'destroy');
-// });
+    Route::delete('/', 'destroy');
+});

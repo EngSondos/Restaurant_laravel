@@ -22,15 +22,18 @@ class StoreOrderRequest extends FormRequest
     public function rules(): array
     {
             return [
+                
                 'total_price' => 'required|numeric|min:0',
                 'discount' => 'nullable|numeric',
                 'tax'=> 'sometimes|numeric|max:1',
                 'payment_method' => 'nullable|in:CASH,VISA',
                 'service_fee' => 'sometimes|numeric|max:1',
-                'status' => 'required|in:Pending,Accepted,Prepare,Complete,Served,Canceled,Paid',
+                // 'status' => 'required|in:Pending,Accepted,Prepare,Complete,Served,Canceled,Paid',
                 'table_id' => 'required|exists:tables,id',
-                'user_id' => 'required|exists:users,id',
+                'user_id' => 'nullable|exists:users,id',
                 'customer_id' => 'nullable|exists:customers,id',
+                // 'reservation_id' => 'nullable|exists:reservations,id',
+
                 
             ];       
     }

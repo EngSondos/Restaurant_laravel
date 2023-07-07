@@ -7,6 +7,7 @@ use App\Http\Requests\Order\StoreOrderRequest;
 use App\Http\Resources\Order\OrderResource;
 use App\Http\Resources\Table\TableResource;
 use App\Models\Ingredient;
+use App\Models\Reservation;
 
 
 
@@ -45,8 +46,6 @@ class OrderController extends Controller
 
 
 
-
-
     public function store(StoreOrderRequest $request)
     {
         $data = $request->all();
@@ -56,13 +55,52 @@ class OrderController extends Controller
         $total_price = $request->input('total_price') * (1 + $tax) * (1 + $service_fee) - ($data['discount'] ?? 0);
         $data['total_price'] = $total_price;
 
-       
+        $customer_id = $request->input('customer_id');
+        $user_id = $request->input('user_id');
+        $reservation_id = $request->input('reservation_id');
 
-        $order= Order::create($data);
+        $accepted_reservation = null;
+    
+        if ($customer_id &&  $request->has('start_date') ) {
+            $reservationData = [
+                'start_date' => $request->input('start_date'),
+                'status' => 'progress',
+                'customer_id' => $customer_id,
+                'table_id' => $request->input('table_id'),
+                'order_id' => null,
+            ];
 
+            // dd(now());
+            // dd($request->input('start_date'));
+            $reservation = Reservation::create($reservationData);
+
+            $data['reservation_id'] = $reservation->id;
+            $data['table_id'] = $request->input('table_id');
+    
+            $accepted_reservation = $reservation;
+            
+        } else if ($customer_id && $user_id && $reservation_id) {
+            $accepted_reservation = Reservation::where('customer_id', $customer_id)
+                ->where('status', 'accepted')
+                ->where('id', $reservation_id)
+                ->first();
+    
+            if ($accepted_reservation) {
+                $data['table_id'] = $accepted_reservation->table_id;
+                $data['customer_id'] = $customer_id;
+                $data['reservation_id'] = $reservation_id;
+            }
+        }
+        if ($user_id) {
+            $data['status'] = 'prepare';
+        }
+        $order = Order::create($data);
+        if ($accepted_reservation) {
+            $accepted_reservation->order_id = $order->id;
+            $accepted_reservation->save();
+        }
 
         $products = $request->input('products');
-
         foreach ($products as $product) {
             $extra = array_key_exists('extra', $product) ? $product['extra'] : null;
 
@@ -77,15 +115,9 @@ class OrderController extends Controller
         }
         event(new OrderCreated($order));
 
-
-        if ($order){
-            return $this->success('order added successfully',Response::HTTP_CREATED);
-
-         }
-         return $this->error('order not added ',Response::HTTP_CONFLICT);
+        return $this->success('Order added successfully', Response::HTTP_CREATED);
 
     }
-
 
     /**
      * Display the specified resource.

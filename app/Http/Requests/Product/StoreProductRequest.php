@@ -32,7 +32,7 @@ class StoreProductRequest extends FormRequest
             "ingredients.*.total"=>"required",
             "extra"=>"sometimes|array",
             "extra.*"=>"exists:ingredients,id",
-            'image'  => 'required|max:1000|mimes:jpg,png,jpeg,gif|image',
+            'image'  => 'required|max:2500|mimes:jpg,png,jpeg,gif|image',
             'discount'=>'sometimes|numeric|min:0.01|max:0.99'
                 ];
     }

@@ -5,12 +5,16 @@ use App\Http\Requests\Auth\StaffLoginRequest;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Resources\User\UserResource;
+use App\Traits\ApiRespone;
 
 
 use Validator;
 
 class StaffAuthController extends Controller
 {
+    use ApiRespone;
+
     /**
      * Create a new AuthController instance.
      *
@@ -55,7 +59,8 @@ class StaffAuthController extends Controller
      * @return \Illuminate\Http\JsonResponse
      */
     public function userProfile() {
-        return response()->json(auth()->user());
+        return $this->sendData('',new UserResource(auth()->user()));
+
     }
     /**
      * Get the token array structure.
