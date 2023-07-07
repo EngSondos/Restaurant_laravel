@@ -254,7 +254,7 @@ Route::prefix('reservation')->controller(ReservationController::class)->group(fu
     Route::post('', 'store');
 
     Route::get('/date/{table_id}', 'getAvailableDateByTableId');
-    Route::get('/customer','getReservationByCustomerId');
+    Route::get('/get/customer','getReservationByCustomerId');
 
 });
 
