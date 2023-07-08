@@ -32,7 +32,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 // Route::apiResource('/ingredients',);
 
-Route::post('payment',[PaymentController::class , 'checkout']);
+Route::post('CreateCheckoutSession',[PaymentController::class , 'createCheckoutSession']);
 
 //Register & Login
 Route::prefix('auth/customer')->controller(CustomerAuthController::class)->group(function () {

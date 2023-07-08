@@ -11,16 +11,54 @@ use Stripe;
 class PaymentController extends Controller
 {
     use ApiRespone;
-    public function checkout(Request $req){
-        // return $req->all();
-        Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
-        // Stripe\Charge::create([
-        //     'amount'=>1000,
-        //     'currency' => 'EGP',
-        //     'source' => $req->stripe->token,
-        //     'description'=>'Test'
-        // ]);
-        // Session::flash('success','payment has been successfully');
-        return $this->success('payment has been successfully done');
+    // public function checkout(Request $req){
+    //     // return $req->all();
+    //     Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+    //     Stripe\Charge::create([
+    //         'amount'=>1000,
+    //         'currency' => 'EGP',
+    //         'source' => $req->stripe->token,
+    //         'description'=>'Test'
+    //     ]);
+    //     Session::flash('success','payment has been successfully');
+    //     return $this->success('payment has been successfully done');
+    // }
+    public function createCheckoutSession(Request $request)
+    {
+        \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
+
+
+        
+        try {
+            $session = \Stripe\Checkout\Session::create([
+                'line_items' => [
+                    [
+                        'price_data' => [
+                            'currency' => 'EGP',
+                            'product_data' => [
+                              'name' => 'T-shirt',
+                              'images'=>['https://www.designmantic.com/blog/wp-content/uploads/2015/11/Item-Logo.jpg'],
+                              'description'=>'Total price of all products in the cart'
+                            ],
+                            'unit_amount' => 2000,
+                          ],
+                          'quantity' => 1,
+                    ],
+                ],
+                'mode' => 'payment',
+                'payment_method_types' => ['card'],
+                'success_url' => $request->successUrl,
+                'cancel_url' => $request->failureUrl,
+            ]);
+
+            return response()->json([
+                'sessionId' => $session->id,
+                'PublicKey' => env('STRIPE_KEY')
+            ]);
+        } catch (\Stripe\Exception\CardException $e) {
+            return response()->json([
+                'error' => $e->getMessage(),
+            ], 400);
+        }
     }
 }

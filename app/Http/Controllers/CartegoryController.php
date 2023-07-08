@@ -35,7 +35,7 @@ class CartegoryController extends Controller
     */
     public function show(Request $req)
     {
-        $filtered = DB::table('categories')->select(['name', 'image','id'])->where('name', 'like', $req["name"] . '%')->orderBy('name')->get();
+        $filtered = DB::table('categories')->select(['name', 'image','id'])->where('name', 'like', $req["name"] . '%')->get();
         //check if the filtered array contains items or not
         return $filtered->first() ?
             $this->sendData('', $filtered) :

@@ -31,7 +31,7 @@ class CartController extends Controller
             return $this->success('no cards to be showen');
         }
 
-        $cart = $carts->cartProduct()->with('product.ingredients')->paginate(8);
+        $cart = $carts->cartProduct()->with('product.ingredients')->get();
 
         return $this->sendData('All Carts has been retrieved',[$cart,'cart_total_price' => $carts->total_price]);
     }
