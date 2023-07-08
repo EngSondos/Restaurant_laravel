@@ -254,7 +254,7 @@ Route::prefix('reservation')->controller(ReservationController::class)->group(fu
     Route::post('', 'store');
 
     Route::get('/date/{table_id}', 'getAvailableDateByTableId');
-    Route::get('/customer','getReservationByCustomerId');
+    Route::get('/get/customer','getReservationByCustomerId');
 
 });
 
@@ -281,6 +281,7 @@ Route::prefix('tables')->controller(TableController::class)->group(function () {
     Route::get('search', 'searchByGuestNumbers');
 
     Route::get('available', 'getAvailableTables');
+    Route::get('served', 'getTablesWithServedOrders');
 
 
     Route::get('/{id}', 'show');
@@ -291,6 +292,8 @@ Route::prefix('tables')->controller(TableController::class)->group(function () {
 
     Route::get('available/inday', 'availbeTablesInTheDay');
 
+
+
 });
 
 //Orders API Methods For Waiter
@@ -299,19 +302,21 @@ Route::prefix('orders')->controller(OrderController::class)->group(function () {
 
     Route::post('', 'store');
 
-    Route::get('/tables/prepare', 'getTablesWithPreparedOrders');
+    Route::get('/tables/prepare/complete', 'getTablesWithPreparedOrCompleteOrders');
 
     Route::get('prepare', 'prepareOrders');
 
     Route::get('served', 'servedOrders');
 
-
-
     Route::get('/{id}', 'show');
 
-    Route::get('tables/{id}', 'getOrderTable');
+    Route::get('tables/{id}', 'getOrderOrCompleteTable');
 
-    Route::post('/{order_id}/status/{new_status}', 'UpdateOrderStatus');
+    Route::post('served/{order_id}', 'markOrderAsServed');
+
+    Route::post('paid/{order_id}', 'markOrderAsPaid');
+
+
 
     Route::put('kitchen/{id}', 'changeOrderStatus');
 });

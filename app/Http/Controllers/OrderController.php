@@ -46,8 +46,6 @@ class OrderController extends Controller
 
 
 
-
-
     public function store(StoreOrderRequest $request)
     {
         $data = $request->all();
@@ -71,12 +69,16 @@ class OrderController extends Controller
                 'table_id' => $request->input('table_id'),
                 'order_id' => null,
             ];
+
+            // dd(now());
+            // dd($request->input('start_date'));
             $reservation = Reservation::create($reservationData);
 
             $data['reservation_id'] = $reservation->id;
             $data['table_id'] = $request->input('table_id');
     
             $accepted_reservation = $reservation;
+            
         } else if ($customer_id && $user_id && $reservation_id) {
             $accepted_reservation = Reservation::where('customer_id', $customer_id)
                 ->where('status', 'accepted')
@@ -159,22 +161,22 @@ public function servedOrders()
 
 
 
-    public function getTablesWithPreparedOrders()
+    public function getTablesWithPreparedOrCompleteOrders()
     {
-        $tableIds = Order::where('status', '=', 'Prepare')->pluck('table_id')->unique();
+        $tableIds = Order::whereIn('status',['Prepare','Complete'])->pluck('table_id')->unique();
 
         if ($tableIds->isEmpty()) {
-            return $this->error('No tables found with prepared orders');
+            return $this->error('No tables found with prepared or completed orders');
         }
 
         $tables = Table::whereIn('id', $tableIds)->get();
 
         return TableResource::collection($tables)
-            ->additional(['message' => 'Tables with prepared orders retrieved successfully']);
+            ->additional(['message' => 'Tables with prepared and completed orders retrieved successfully']);
     }
 
 
-    public function getOrderTable($table_id)
+    public function getOrderOrCompleteTable($table_id)
     {
 
         try{
@@ -183,14 +185,14 @@ public function servedOrders()
             return $this->error('Table not found', Response::HTTP_NOT_FOUND);
         }
 
-        $prepareOrders = Order::where('table_id', '=', $table_id)->where('status','=','Prepare')->with('products')->get();
+        $prepareOrders = Order::where('table_id', '=', $table_id)->whereIn('status',['Prepare','Complete'])->with('products')->get();
 
         if ($prepareOrders->isEmpty()) {
-            return $this->error('No prepared orders found for this table');
+            return $this->error('No prepared nor completed orders found for this table');
         }
 
         return OrderResource::collection($prepareOrders)
-            ->additional(['message' => 'Prepared orders for table '.$table_id.' retrieved successfully']);
+            ->additional(['message' => 'Prepared or Completed orders for table '.$table_id.' retrieved successfully']);
     }
 
 
@@ -198,21 +200,40 @@ public function servedOrders()
 
             // change status for the waiter
 
-        public function UpdateOrderStatus(int $order_id,string $new_status)
-        {
-            try{
-                $order = Order::findOrFail($order_id);
-                } catch (ModelNotFoundException $exception){
-                    return $this->error('Order not found', Response::HTTP_NOT_FOUND);
-                }
-                $valid_statuses = ['Pending', 'Accepted', 'Prepare', 'Complete', 'Served', 'Canceled', 'Paid'];
-                if (!in_array($new_status, $valid_statuses)) {
-                    return response()->json(['message' => 'Invalid status'], Response::HTTP_BAD_REQUEST);
-                }
-                $order->update(['status'=>$new_status]);
-                return $this->success('Order status updated successfully');
-        }
 
+    public function markOrderAsServed(int $orderId)
+{
+    $order = Order::find($orderId);
+    if (!$order) {
+        return response()->json(['error' => 'Order not found'], 404);
+    }
+
+    $order->status = 'served';
+    if (!$order->save()) {
+        return $this->error('Failed to update order status');
+    }
+
+    return $this->success('Order status updated to served');
+}
+
+
+
+        // change status fot the cashier
+
+        public function markOrderAsPaid(int $orderId)
+        {
+            $order = Order::find($orderId);
+            if (!$order) {
+                return response()->json(['error' => 'Order not found'], 404);
+            }
+
+            $order->status = 'paid';
+            if (!$order->save()) {
+                return $this->error('Failed to update order status');
+            }
+
+            return $this->success('Order status updated to paid');
+        }
 
 
 

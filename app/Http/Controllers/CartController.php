@@ -17,7 +17,7 @@ class CartController extends Controller
     use ApiRespone;
     private $user_id ;
     public function __construct() {
-        $this->user_id = auth()->user()->id;
+        $this->user_id = 3;
     }
     /**
      * Display all stored products
@@ -71,11 +71,11 @@ class CartController extends Controller
      */
     public function update(UpdateCartRequest $req)
     {
-        //get the card that the user interact with 
+        //get the card that the user interact with
         $cartproduct = CartProduct::with('product.ingredients')->findOrFail( $req['id']);
         //get the ingredients of this product
         $productIngredients = $cartproduct->product->ingredients;
-        //recieve the quantity of the product that user need 
+        //recieve the quantity of the product that user need
         $cardQTY = $req->quantity;
         //check if the user try to decrement the quantity to 0 or less and send to him error message
         if($cardQTY < 1)
@@ -85,19 +85,19 @@ class CartController extends Controller
         //loop in the ingredients to check if this ingredients still exist in the stoke with this demand quantity
         foreach ($productIngredients as $ingredient) {
             //if not so send error message to the user that this product cannot increment more
-            if ($ingredient->quntity <  $cardQTY *  $ingredient->pivot->quantity) 
+            if ($ingredient->quntity <  $cardQTY *  $ingredient->pivot->quantity)
                 return $this->error("This product cannot be increased any more");
         }
         //else this quantity is avialable so update the quantity in the cartproduct table and the price of this product
         $cartproduct->update([
-            'quantity' => $cardQTY, 
+            'quantity' => $cardQTY,
             'total_price' => $cardQTY * $cartproduct->product->total_price
         ]);
-        //count the total price of all demand products 
+        //count the total price of all demand products
         $this->countTotalPrice($this->user_id);
         //send success message to the user tell him that the cart product quantity has been updated
         return $this->success('The quantity has been updated');
-        
+
     }
 
     /**
@@ -133,7 +133,7 @@ class CartController extends Controller
         DB::table('carts')->where('user_id', '=', $this->user_id)->delete();
 
         return $this->success('No Products In The Cart');
-        
+
     }
 
     /**

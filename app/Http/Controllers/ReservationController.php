@@ -4,15 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Reservation\GetByDateRequest;
 use App\Http\Requests\Reservation\StoreReservationRequest;
-use App\Http\Resources\Table\TableResource;
 use App\Models\Reservation;
 use App\Models\Table;
 use App\Traits\ApiRespone;
 use Carbon\Carbon;
-use DateTime;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 
 class ReservationController extends Controller
 {
@@ -67,7 +63,10 @@ class ReservationController extends Controller
         $reservation = new Reservation;
         $reservation->start_date = $request->input('start_date');
         $reservation->table_id = $request->input('table_id');
-        $reservation->customer_id = auth()->guard('customers')->id(); //will change by login customer
+        // $reservation->customer_id = auth()->guard('customers')->id(); //will change by login customer
+        // $reservation->customer_id = $request->input('customer_id'); //will change by login customer
+        $reservation->customer_id = 1;//will change by login customer
+
 
 
         if($reservation->save())
@@ -120,7 +119,9 @@ class ReservationController extends Controller
 
     public function getReservationByCustomerId()
     {
-        $reservtions =  Reservation::where('customer_id','=',auth()->user()->id)->get();
+        // $reservtions =  Reservation::with(['table'])->where('customer_id','=',auth()->user()->id)->get();
+         $reservtions =  Reservation::with(['table'])->where('customer_id','=',1)->paginate(8);
+
         return $this->sendData('',$reservtions);
     }
 
@@ -133,7 +134,15 @@ class ReservationController extends Controller
       {
         return $this->error('Reservation Not Exits');
       }
-      $reservation->status="canceled";
+
+      if($reservation->status=="progress")
+      {
+        $reservation->status="canceled";
+    }else
+      {
+        return $this->success('Can Not Modified This Reservation');
+
+      }
 
      if( $reservation->save())
      {
@@ -149,7 +158,14 @@ class ReservationController extends Controller
       {
         return $this->error('Reservation Not Exits');
       }
-      $reservation->status="accepted";
+      if($reservation->status=="progress")
+      {
+        $reservation->status="accepted";
+      }else
+      {
+        return $this->success('Can Not Modified This Reservation');
+
+      }
 
      if( $reservation->save())
      {

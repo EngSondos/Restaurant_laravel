@@ -22,7 +22,7 @@ class ProductController extends Controller
      */
     public function index()
     {
-        return Product::paginate(8,['id','name','image','status','closed','total_price']);
+        return Product::with('category')->paginate(8,['id','name','image','status','closed','total_price']);
     }
 
     /**
@@ -62,10 +62,7 @@ class ProductController extends Controller
      */
     public function show(int $id)
     {
-        $product = Product::with('ingredients')->find($id);
-
-
-
+        $product = Product::with(['ingredients','category'])->find($id);
 
         if(!$product){
             return $this->error('This Product Not Exist');
