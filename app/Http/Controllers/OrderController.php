@@ -240,7 +240,7 @@ public function servedOrders()
 
         // change status fot the cashier
 
-        public function markOrderAsPaid(int $orderId)
+        public function markOrderAsPaid(int $orderId,Request $request)
         {
             $order = Order::find($orderId);
             if (!$order) {
@@ -248,6 +248,7 @@ public function servedOrders()
             }
 
             $order->status = 'paid';
+            $order->payment_method=$request->method;
             if (!$order->save()) {
                 return $this->error('Failed to update order status');
             }

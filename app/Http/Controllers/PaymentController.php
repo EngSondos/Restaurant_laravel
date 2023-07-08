@@ -27,8 +27,8 @@ class PaymentController extends Controller
     {
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
 
+// dd($request);
 
-        
         try {
             $session = \Stripe\Checkout\Session::create([
                 'line_items' => [
@@ -38,9 +38,10 @@ class PaymentController extends Controller
                             'product_data' => [
                               'name' => 'T-shirt',
                               'images'=>['https://www.designmantic.com/blog/wp-content/uploads/2015/11/Item-Logo.jpg'],
-                              'description'=>'Total price of all products in the cart'
+                              'description'=>'Total price of all products in the cart',
+                            // 'price'=>$request->price
                             ],
-                            'unit_amount' => 2000,
+                            'unit_amount' => (int)$request->price*100,
                           ],
                           'quantity' => 1,
                     ],
