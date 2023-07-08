@@ -157,7 +157,7 @@ class ProductController extends Controller
         $porduct = Product::find($id);
 
         if (!$porduct) {
-            return $this->error('This Ingredient Not Exist');
+            return $this->error('This Product Not Exist');
         }
         $porduct->closed=!$porduct->closed;
         if ($porduct->save()) {
@@ -167,8 +167,20 @@ class ProductController extends Controller
         }
     }
 
-    public function getProductsByCategoryId(){
+    public function getProductsByCategoryId(int $id)
+    {
+        $categoty = Category::find($id);
+        if(!$categoty){
 
+            return $this->error('This Category Not Exist');
+        }
+
+        $products = Product::where('status','=',1)->where('closed',0)->where('category_id',$id)->paginate(8);
+
+        if($products){
+            return $this->sendData('',$products);
+        }
+        return $this->success('No Product In This Category');
     }
 
 
