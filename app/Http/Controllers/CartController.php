@@ -6,6 +6,7 @@ use App\Http\Requests\Cart\StoreCartRequest;
 use App\Http\Requests\Cart\UpdateCartRequest;
 use App\Models\Cart;
 use App\Models\CartProduct;
+use App\Models\Ingredient;
 use App\Models\Product;
 use App\Traits\ApiRespone;
 
@@ -17,7 +18,7 @@ class CartController extends Controller
     use ApiRespone;
     private $user_id ;
     public function __construct() {
-        $this->user_id = 3;
+        $this->user_id = 1;
     }
     /**
      * Display all stored products
@@ -41,28 +42,28 @@ class CartController extends Controller
      */
     public function store(StoreCartRequest $req)
     {
-        // dd($this->user_id);
-
-        //check if this product already exists or not
         if (DB::table('cart_product')->where('product_id', '=', $req['product_id'])->where('user_id', '=', $this->user_id)->exists()) {
             return $this->error('this product is already in the cart');
         }
-        // Get the product information
+        
         $product = Product::findOrFail($req['product_id']);
 
-        // Create a new cart item
-        $cart_item = CartProduct::create([
+        $product = Product::with('ingredients')->findOrFail( $req['product_id']);
+
+        $productIngredients = $product->ingredients;
+
+        $this->changeIngredientQTY($productIngredients,0,1);
+
+        CartProduct::create([
             'user_id' => $this->user_id,
             'product_id' => $req['product_id'],
             'total_price' => $product->total_price,
             'quantity' => 1,
             'created_at' => now(),
         ]);
-
-        // Calculate the total price on the cart
+        
         $total_price_on_cart = $this->countTotalPrice($this->user_id);
 
-        // Return a success response
         return $this->sendData('Product has been added to the cart.', $total_price_on_cart);
     }
 
@@ -71,33 +72,27 @@ class CartController extends Controller
      */
     public function update(UpdateCartRequest $req)
     {
-        //get the card that the user interact with
         $cartproduct = CartProduct::with('product.ingredients')->findOrFail( $req['id']);
-        //get the ingredients of this product
+
         $productIngredients = $cartproduct->product->ingredients;
-        //recieve the quantity of the product that user need
-        $cardQTY = $req->quantity;
-        //check if the user try to decrement the quantity to 0 or less and send to him error message
-        if($cardQTY < 1)
-        {
+
+        if((int)$req->quantity < 1)
+        {   
+            
             return $this->error('The quantity can not be decremented less than 1');
         }
-        //loop in the ingredients to check if this ingredients still exist in the stoke with this demand quantity
-        foreach ($productIngredients as $ingredient) {
-            //if not so send error message to the user that this product cannot increment more
-            if ($ingredient->quntity <  $cardQTY *  $ingredient->pivot->quantity)
-                return $this->error("This product cannot be increased any more");
-        }
-        //else this quantity is avialable so update the quantity in the cartproduct table and the price of this product
+        $this->changeIngredientQTY($productIngredients , (int)$cartproduct->quantity , (int)$req->quantity);
+
+        $cardQTY = $req->quantity;
+
         $cartproduct->update([
             'quantity' => $cardQTY,
             'total_price' => $cardQTY * $cartproduct->product->total_price
         ]);
-        //count the total price of all demand products
-        $this->countTotalPrice($this->user_id);
-        //send success message to the user tell him that the cart product quantity has been updated
-        return $this->success('The quantity has been updated');
 
+        $this->countTotalPrice($this->user_id);
+
+        return $this->success('The quantity has been updated');
     }
 
     /**
@@ -106,10 +101,13 @@ class CartController extends Controller
     public function destroy(Request $request)
     {
         if($request['id']){
-            $cart_product =  DB::table('cart_product')->where('id',$request['id'])->exists();
-            if(!$cart_product){
-                return $this->error("This Product Doesn't Exist In The Cart");
-            }
+
+            $cartproduct = CartProduct::with('product.ingredients')->findOrFail( $request['id']);
+
+            $productIngredients = $cartproduct->product->ingredients;
+
+            $this->changeIngredientQTY($productIngredients , $cartproduct->quantity , 0);
+
             DB::table('cart_product')->where('cart_product.id', $request['id'])->delete();
 
             $total_price_on_cart = $this->countTotalPrice($this->user_id);
@@ -141,9 +139,10 @@ class CartController extends Controller
      */
     public static function countTotalPrice($user_id)
     {
-        //get all products belong to specific user then sum all prices of all choosed products
+
         $totalprice = DB::table('cart_product')->where('user_id', $user_id)
             ->sum('total_price');
+
         if (Cart::where('user_id', $user_id)->exists()) {
             DB::table('carts')->where('user_id', $user_id)->update(['total_price' => $totalprice, 'updated_at' => now()]);
         } else {
@@ -153,6 +152,30 @@ class CartController extends Controller
                 'created_at' => now()
             ]);
         }
+
         return $totalprice;
+    }
+
+    /**
+     * Change the quantity of ingredients
+     */
+    public function changeIngredientQTY($ingredients , $oldQTY , $newQTY){
+        
+        foreach ($ingredients as $ingredient) {
+            if ($newQTY == 1 and $oldQTY == 0)
+            {
+                $ingredientquantity = $ingredient->quntity - $ingredient->pivot->quantity;
+                
+            }else if ($newQTY > $oldQTY){
+                $difference = $newQTY - $oldQTY;
+                $ingredientquantity = $ingredient->quntity - $ingredient->pivot->quantity  * $difference;
+
+            }else{                                                  
+                $difference = $oldQTY - $newQTY;
+                $ingredientquantity = $ingredient->quntity + $ingredient->pivot->quantity  * $difference;
+            }
+            Ingredient::query()->where('id',$ingredient->id)->update(['quntity' =>$ingredientquantity]);
+        }
+
     }
 }
