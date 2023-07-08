@@ -34,7 +34,7 @@ class OrderController extends Controller
     {
         $orders = Order::whereNotIn('status',['served','paid'])
         ->with('products')->paginate(8);
-        
+
         return OrderResource::collection($orders)
         ->additional(['message' => 'Orders Retrieved Successfully']);
 
@@ -60,7 +60,7 @@ class OrderController extends Controller
         $reservation_id = $request->input('reservation_id');
 
         $accepted_reservation = null;
-    
+
         if ($customer_id &&  $request->has('start_date') ) {
             $reservationData = [
                 'start_date' => $request->input('start_date'),
@@ -76,15 +76,15 @@ class OrderController extends Controller
 
             $data['reservation_id'] = $reservation->id;
             $data['table_id'] = $request->input('table_id');
-    
+
             $accepted_reservation = $reservation;
-            
+
         } else if ($customer_id && $user_id && $reservation_id) {
             $accepted_reservation = Reservation::where('customer_id', $customer_id)
                 ->where('status', 'accepted')
                 ->where('id', $reservation_id)
                 ->first();
-    
+
             if ($accepted_reservation) {
                 $data['table_id'] = $accepted_reservation->table_id;
                 $data['customer_id'] = $customer_id;
@@ -110,7 +110,7 @@ class OrderController extends Controller
                 'status' => 'progress',
             ]);
             // dd($product['extra']);
-            
+
 
         }
         event(new OrderCreated($order));
@@ -189,6 +189,26 @@ public function servedOrders()
 
         if ($prepareOrders->isEmpty()) {
             return $this->error('No prepared nor completed orders found for this table');
+        }
+
+        return OrderResource::collection($prepareOrders)
+            ->additional(['message' => 'Prepared or Completed orders for table '.$table_id.' retrieved successfully']);
+    }
+
+    public function getOrderServedByTable($table_id)
+    {
+
+        try{
+        $table = Table::findOrFail($table_id);
+        } catch (ModelNotFoundException $exception){
+            return $this->error('Table not found', Response::HTTP_NOT_FOUND);
+        }
+
+        $prepareOrders = Order::where('table_id', '=', $table_id)->
+        whereIn('status',['Served'])->with('products')->get();
+
+        if ($prepareOrders->isEmpty()) {
+            return $this->error('No Served nor completed orders found for this table');
         }
 
         return OrderResource::collection($prepareOrders)

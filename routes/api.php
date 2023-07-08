@@ -62,7 +62,7 @@ Route::prefix('auth/user')->controller(StaffAuthController::class)->group(functi
 
 // Route::middleware(['auth:users','role:Admin'])->controller(IngredientController::class)->group(function () {
 
-//     Route::get('ingredients/status/{id}', 'changeClosed');
+//         Route::get('ingredients/status/{id}', 'changeStatus');
 
 //     Route::get('search/ingredient', 'search');
 
@@ -73,7 +73,7 @@ Route::prefix('auth/user')->controller(StaffAuthController::class)->group(functi
 // Route::middleware(['auth:users','role:Admin'])->apiResource('products', ProductController::class)->except('destroy');
 
 // Route::controller(ProductController::class)->middleware(['auth:users','role:Admin'])->group(function () {
-//     Route::get('products/status/{id}', 'changeStatus');
+//    Route::get('products/status/{id}', 'changeClosed');
 
 //     Route::put('product/update/ingredients/{product}', 'updateIngredientsForProduct');
 // });
@@ -154,22 +154,27 @@ Route::prefix('auth/user')->controller(StaffAuthController::class)->group(functi
 
 // //Orders API Methods For Waiter
 // Route::prefix('orders')->middleware("auth:users")->controller(OrderController::class)->group(function () {
-//     Route::get('', 'index');
+//    Route::get('', 'index');
 
 //     Route::post('', 'store');
 
-//     Route::get('/tables/prepare', 'getTablesWithPreparedOrders');
+//     Route::get('/tables/prepare/complete', 'getTablesWithPreparedOrCompleteOrders');
 
 //     Route::get('prepare', 'prepareOrders');
 
 //     Route::get('served', 'servedOrders');
 
-
 //     Route::get('/{id}', 'show');
 
-//     Route::get('tables/{id}', 'getOrderTable');
+//     Route::get('/tables/complete/{id}', 'getOrderOrCompleteTable');
+//     Route::get('/tables/served/{id}', 'getOrderServedByTable');
 
-//     Route::post('/{order_id}/status/{new_status}', 'UpdateOrderStatus');
+
+//     Route::post('served/{order_id}', 'markOrderAsServed');
+
+//     Route::post('paid/{order_id}', 'markOrderAsPaid');
+
+
 
 //     Route::put('kitchen/{id}', 'changeOrderStatus');
 // });
@@ -215,7 +220,7 @@ Route::prefix('auth/user')->controller(StaffAuthController::class)->group(functi
 Route::apiResource('ingredients', IngredientController::class)->except('destroy');
 
 Route::controller(IngredientController::class)->group(function () {
-    Route::get('ingredients/status/{id}', 'changeClosed');
+    Route::get('ingredients/status/{id}', 'changeStatus');
 
     Route::get('search/ingredient', 'search');
 
@@ -226,7 +231,7 @@ Route::controller(IngredientController::class)->group(function () {
 Route::apiResource('products', ProductController::class)->except('destroy');
 
 Route::controller(ProductController::class)->group(function () {
-    Route::get('products/status/{id}', 'changeStatus');
+    Route::get('products/status/{id}', 'changeClosed');
 
     Route::put('product/update/ingredients/{product}', 'updateIngredientsForProduct');
 
@@ -310,7 +315,9 @@ Route::prefix('orders')->controller(OrderController::class)->group(function () {
 
     Route::get('/{id}', 'show');
 
-    Route::get('tables/{id}', 'getOrderOrCompleteTable');
+    Route::get('/tables/complete/{id}', 'getOrderOrCompleteTable');
+    Route::get('/tables/served/{id}', 'getOrderServedByTable');
+
 
     Route::post('served/{order_id}', 'markOrderAsServed');
 

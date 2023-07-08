@@ -167,6 +167,10 @@ class ProductController extends Controller
         }
     }
 
+    public function getProductsByCategoryId(){
+
+    }
+
 
 
 
