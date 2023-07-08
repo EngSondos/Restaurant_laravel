@@ -42,8 +42,10 @@ class ReservationController extends Controller
         return $this->error('This Table Not Exist');
 
      }
-     $reservation =   Reservation::with(['table','customer'])->where('table_id','=',$table_id)->where('start_date',Carbon::now())->get();
 
+     $reservation =   Reservation::with(['table','customer'])->where('table_id','=',$table_id)
+     ->where(DB::raw("DATE_FORMAT(start_date, '%Y-%m-%d')"), '=', now()->toDateString())->where('status','accepted')->get();
+    //  dd($reservation);
      return $this->sendData('',$reservation);
     }
 
@@ -63,11 +65,7 @@ class ReservationController extends Controller
         $reservation = new Reservation;
         $reservation->start_date = $request->input('start_date');
         $reservation->table_id = $request->input('table_id');
-        // $reservation->customer_id = auth()->guard('customers')->id(); //will change by login customer
-        // $reservation->customer_id = $request->input('customer_id'); //will change by login customer
-        $reservation->customer_id = 1;//will change by login customer
-
-
+        $reservation->customer_id = auth()->user()->id;
 
         if($reservation->save())
             return $this->success('Reservation Added Successfully');
@@ -119,8 +117,8 @@ class ReservationController extends Controller
 
     public function getReservationByCustomerId()
     {
-        // $reservtions =  Reservation::with(['table'])->where('customer_id','=',auth()->user()->id)->get();
-         $reservtions =  Reservation::with(['table'])->where('customer_id','=',1)->paginate(8);
+        // $reservtions =  Reservation::with(['table'])->where('customer_id','=',4)->get();
+         $reservtions =  Reservation::with(['table'])->where('customer_id','=',auth()->user()->id)->paginate(8);
 
         return $this->sendData('',$reservtions);
     }

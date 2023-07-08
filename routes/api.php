@@ -58,19 +58,19 @@ Route::prefix('auth/user')->controller(StaffAuthController::class)->group(functi
 
 
 // //Ingrdents API Methods
-// Route::apiResource('ingredients', IngredientController::class)->except('destroy')->middleware(['auth:users','role:Admin']);
+Route::apiResource('ingredients', IngredientController::class)->except('destroy')->middleware(['auth:users','role:Admin']);
 
-// Route::middleware(['auth:users','role:Admin'])->controller(IngredientController::class)->group(function () {
+Route::middleware(['auth:users','role:Admin'])->controller(IngredientController::class)->group(function () {
 
-//         Route::get('ingredients/status/{id}', 'changeStatus');
+        Route::get('ingredients/status/{id}', 'changeStatus');
 
-//     Route::get('search/ingredient', 'search');
+    Route::get('search/ingredient', 'search');
 
-//     Route::get('active/ingredient', 'getActiveIngredients');
-// });
+    Route::get('active/ingredient', 'getActiveIngredients');
+});
 
-// //Products API Methods
-// Route::middleware(['auth:users','role:Admin'])->apiResource('products', ProductController::class)->except('destroy');
+//Products API Methods
+// Route::middleware(['auth:users','role:Admin,Waiter'])->apiResource('products', ProductController::class)->except('destroy');
 
 // Route::controller(ProductController::class)->middleware(['auth:users','role:Admin'])->group(function () {
 //    Route::get('products/status/{id}', 'changeClosed');
@@ -84,188 +84,43 @@ Route::prefix('auth/user')->controller(StaffAuthController::class)->group(functi
 // Route::get('active/product', 'getActiveProducts');
 // });
 
-// //Reservation API
-// Route::prefix('reservation')->controller(ReservationController::class)->group(function () {
-//     //reservation for user -->
-//     Route::middleware(['auth:users','role:Admin,Cashier'])->group(function () {
-//         //for admin
-//         Route::get('', 'index');
-
-//         Route::get('/date', 'getReservationByDate');
-
-//         Route::get('/{id}', 'getReservationByTableId');
-
-//         //cancel reservation --> cashair
-
-//         Route::put('/status/accept/{id}', 'AcceptReservation');
-//     });
-
-//     Route::middleware(['auth:users,customers','role:Cashier'])->group(function(){
-
-//         Route::put('/status/cancel/{id}', 'cancelReservation');
-//     });
-
-//     Route::middleware("auth:customers")->group(function () {
-
-//         Route::post('', 'store');
-
-//         Route::get('/date/{table_id}', 'getAvailableDateByTableId');
-
-//         Route::get('get/customer','getReservationByCustomerId');
-
-//     });
-// });
-
-// //Users API Methods For Admin
-// Route::prefix('users')->middleware(['auth:users','role:Admin'])->controller(UserController::class)->group(function () {
-//     Route::get('', 'index');
-
-//     Route::get('/search', 'search');
-
-//     Route::post('', 'store');
-
-//     Route::get('/{id}', 'show');
-
-//     Route::put('/{id}', 'update');
-
-//     Route::delete('/{id}', 'destroy');
-// });
-
-
-// //Tables API Methods For Admin
-// Route::prefix('tables')->controller(TableController::class)->group(function () {
-//     Route::middleware(['auth:users','role:Admin'])->group(function(){
-//         Route::get('', 'index');
-
-//         Route::post('', 'store');
-
-//         Route::get('available', 'getAvailableTables');
-
-//         Route::get('/{id}', 'show');
-
-//         Route::put('/{id}', 'update');
-
-//         Route::get('status/{id}', 'changeStatus');
-//     });
-
-
-//     Route::get('available/inday', 'availbeTablesInTheDay')->middleware(['auth:users','role:Waiter']);
-// });
-
-// //Orders API Methods For Waiter
-// Route::prefix('orders')->middleware("auth:users")->controller(OrderController::class)->group(function () {
-//    Route::get('', 'index');
-
-//     Route::post('', 'store');
-
-//     Route::get('/tables/prepare/complete', 'getTablesWithPreparedOrCompleteOrders');
-
-//     Route::get('prepare', 'prepareOrders');
-
-//     Route::get('served', 'servedOrders');
-
-//     Route::get('/{id}', 'show');
-
-//     Route::get('/tables/complete/{id}', 'getOrderOrCompleteTable');
-//     Route::get('/tables/served/{id}', 'getOrderServedByTable');
-
-
-//     Route::post('served/{order_id}', 'markOrderAsServed');
-
-//     Route::post('paid/{order_id}', 'markOrderAsPaid');
-
-
-
-//     Route::put('kitchen/{id}', 'changeOrderStatus');
-// });
-
-// Route::prefix('order_products')->middleware("auth:users")->controller(OrderProductController::class)->group(function () {
-
-//     Route::put('{orderId}/cancel/{orderProductId}', 'cancelOrderProducts');
-//     Route::put('{orderId}/complete/{orderProductId}', 'completeOrderProducts');
-// });
-
-// //Categories API Methods For Admin
-// Route::prefix('category')->middleware(["auth:users","role:Admin"])->controller(CartegoryController::class)->group(function () {
-//     Route::get('/', 'index');
-
-//     Route::post('/', 'store');
-
-//     Route::get('/{category}/edit', 'edit');
-
-//     Route::put('/{category}', 'update');
-
-//     Route::get('/show', 'show');
-
-//     Route::delete('/{category}', 'destroy');
-// });
-
-//Cart API Methods For
-// Route::prefix('cart')->middleware(["auth:users","role:Waiter"])->controller(CartController::class)->group(function () {
-//     Route::get('/', 'index');
-
-//     Route::post('/', 'store');
-
-//     Route::put('/', 'update');
-
-//     Route::delete('/', 'destroy');
-// });
-
-//-------------------------------------------------------Without Middelwares---------------------------------------------------
-
-
-
-
-//Ingrdents API Methods
-Route::apiResource('ingredients', IngredientController::class)->except('destroy');
-
-Route::controller(IngredientController::class)->group(function () {
-    Route::get('ingredients/status/{id}', 'changeStatus');
-
-    Route::get('search/ingredient', 'search');
-
-    Route::get('active/ingredient', 'getActiveIngredients');
-});
-
-//Products API Methods
-Route::apiResource('products', ProductController::class)->except('destroy');
-
-Route::controller(ProductController::class)->group(function () {
-    Route::get('products/status/{id}', 'changeClosed');
-
-    Route::put('product/update/ingredients/{product}', 'updateIngredientsForProduct');
-
-    Route::get('search/product', 'search');
-
-    Route::get('active/product', 'getActiveProducts');
-    Route::get('products/category/{id}','getProductsByCategoryId');
-});
-
 //Reservation API
 Route::prefix('reservation')->controller(ReservationController::class)->group(function () {
-
-    //for admin
-    Route::get('', 'index');
-
-    Route::get('/date', 'getReservationByDate');
-
-    Route::get('/{id}', 'getReservationByTableId');
-
-    //cancel reservation --> cashair
-    Route::put('/status/cancel/{id}', 'cancelReservation');
-
-    Route::put('/status/accept/{id}', 'AcceptReservation');
-
     //reservation for user -->
-    Route::post('', 'store');
+    Route::middleware(['auth:users','role:Admin,Cashier'])->group(function () {
+        //for admin
+        Route::get('', 'index');
 
-    Route::get('/date/{table_id}', 'getAvailableDateByTableId');
-    Route::get('/get/customer','getReservationByCustomerId');
+        Route::get('/date', 'getReservationByDate');
 
+        Route::get('/{id}', 'getReservationByTableId');
+
+        //cancel reservation --> cashair
+
+        Route::put('/status/accept/{id}', 'AcceptReservation');
+    });
+
+    Route::middleware(['auth:users,customers','role:Cashier'])->group(function(){
+
+        Route::put('/status/cancel/{id}', 'cancelReservation');
+    });
+
+
+    Route::middleware("auth:customers")->group(function () {
+
+        Route::post('', 'store');
+
+        Route::get('/date/{table_id}', 'getAvailableDateByTableId');
+
+        Route::get('get/customer','getReservationByCustomerId');
+
+    });
 });
+Route::get('reservation/bytable/{id}',[ReservationController::class,'getReservationByTableIdInDay']);
+
 
 //Users API Methods For Admin
-Route::prefix('users')->controller(UserController::class)->group(function () {
+Route::prefix('users')->middleware(['auth:users','role:Admin'])->controller(UserController::class)->group(function () {
     Route::get('', 'index');
 
     Route::get('/search', 'search');
@@ -279,32 +134,31 @@ Route::prefix('users')->controller(UserController::class)->group(function () {
     Route::delete('/{id}', 'destroy');
 });
 
+
 //Tables API Methods For Admin
-Route::prefix('tables')->controller(TableController::class)->group(function () {
-    Route::get('', 'index');
+// Route::prefix('tables')->controller(TableController::class)->group(function () {
+//     Route::middleware(['auth:users','role:Waiter,Admin'])->group(function(){
+//         Route::get('', 'index');
 
-    Route::post('', 'store');
-    Route::get('search', 'searchByGuestNumbers');
-
-    Route::get('available', 'getAvailableTables');
-    Route::get('served', 'getTablesWithServedOrders');
-
-
-    Route::get('/{id}', 'show');
-
-    Route::put('/{id}', 'update');
-
-    Route::get('status/{id}', 'changeStatus');
-
-    Route::get('available/inday', 'availbeTablesInTheDay');
+//         Route::post('', 'store');
 
 
 
-});
+//         Route::get('/{id}', 'show');
+
+//         Route::put('/{id}', 'update');
+
+//         Route::get('status/{id}', 'changeStatus');
+//     });
+
+
+//     Route::get('available/inday', 'availbeTablesInTheDay')->middleware(['auth:users','role:Waiter']);
+//     Route::get('available', 'getAvailableTables')->middleware(['auth:users','role:Waiter']);
+// });
 
 //Orders API Methods For Waiter
-Route::prefix('orders')->controller(OrderController::class)->group(function () {
-    Route::get('', 'index');
+Route::prefix('orders')->middleware("auth:users")->controller(OrderController::class)->group(function () {
+   Route::get('', 'index');
 
     Route::post('', 'store');
 
@@ -329,14 +183,14 @@ Route::prefix('orders')->controller(OrderController::class)->group(function () {
     Route::put('kitchen/{id}', 'changeOrderStatus');
 });
 
-Route::prefix('order_products')->controller(OrderProductController::class)->group(function () {
+Route::prefix('order_products')->middleware("auth:users")->controller(OrderProductController::class)->group(function () {
 
     Route::put('{orderId}/cancel/{orderProductId}', 'cancelOrderProducts');
     Route::put('{orderId}/complete/{orderProductId}', 'completeOrderProducts');
 });
 
 //Categories API Methods For Admin
-Route::prefix('category')->controller(CartegoryController::class)->group(function () {
+Route::prefix('category')->middleware(["auth:users","role:Admin"])->controller(CartegoryController::class)->group(function () {
     Route::get('/', 'index');
 
     Route::post('/', 'store');
@@ -345,15 +199,13 @@ Route::prefix('category')->controller(CartegoryController::class)->group(functio
 
     Route::put('/{category}', 'update');
 
-    Route::put('/{category}/status', 'changeStatus');
-
     Route::get('/show', 'show');
 
     Route::delete('/{category}', 'destroy');
 });
 
-//Cart API Methods For
-Route::prefix('cart')->controller(CartController::class)->group(function () {
+// Cart API Methods For
+Route::prefix('cart')->middleware(["auth:users","role:Waiter"])->controller(CartController::class)->group(function () {
     Route::get('/', 'index');
 
     Route::post('/', 'store');
@@ -362,3 +214,155 @@ Route::prefix('cart')->controller(CartController::class)->group(function () {
 
     Route::delete('/', 'destroy');
 });
+
+//-------------------------------------------------------Without Middelwares---------------------------------------------------
+
+
+
+
+//Ingrdents API Methods
+// Route::apiResource('ingredients', IngredientController::class)->except('destroy');
+
+// Route::controller(IngredientController::class)->group(function () {
+//     Route::get('ingredients/status/{id}', 'changeStatus');
+
+//     Route::get('search/ingredient', 'search');
+
+//     Route::get('active/ingredient', 'getActiveIngredients');
+// });
+
+// //Products API Methods
+Route::apiResource('products', ProductController::class)->except('destroy');
+
+Route::controller(ProductController::class)->group(function () {
+    Route::get('products/status/{id}', 'changeClosed');
+
+    Route::put('product/update/ingredients/{product}', 'updateIngredientsForProduct');
+
+    Route::get('search/product', 'search');
+
+    Route::get('active/product', 'getActiveProducts');
+    Route::get('products/category/{id}','getProductsByCategoryId');
+});
+
+// //Reservation API
+// Route::prefix('reservation')->controller(ReservationController::class)->group(function () {
+
+//     //for admin
+//     Route::get('', 'index');
+
+//     Route::get('/date', 'getReservationByDate');
+
+//     Route::get('/{id}', 'getReservationByTableId');
+
+//     //cancel reservation --> cashair
+//     Route::put('/status/cancel/{id}', 'cancelReservation');
+
+//     Route::put('/status/accept/{id}', 'AcceptReservation');
+
+//     //reservation for user -->
+//     Route::post('', 'store');
+
+//     Route::get('/date/{table_id}', 'getAvailableDateByTableId');
+//     Route::get('/get/customer','getReservationByCustomerId');
+
+// });
+
+// //Users API Methods For Admin
+// Route::prefix('users')->controller(UserController::class)->group(function () {
+//     Route::get('', 'index');
+
+//     Route::get('/search', 'search');
+
+//     Route::post('', 'store');
+
+//     Route::get('/{id}', 'show');
+
+//     Route::put('/{id}', 'update');
+
+//     Route::delete('/{id}', 'destroy');
+// });
+
+// //Tables API Methods For Admin
+Route::prefix('tables')->controller(TableController::class)->group(function () {
+    Route::get('', 'index');
+
+    Route::post('', 'store');
+    Route::get('search', 'searchByGuestNumbers');
+
+    Route::get('available', 'getAvailableTables');
+    Route::get('served', 'getTablesWithServedOrders');
+
+
+    Route::get('/{id}', 'show');
+
+    Route::put('/{id}', 'update');
+
+    Route::get('status/{id}', 'changeStatus');
+
+    Route::get('available/inday', 'availbeTablesInTheDay');
+
+
+
+});
+
+// //Orders API Methods For Waiter
+// Route::prefix('orders')->controller(OrderController::class)->group(function () {
+//     Route::get('', 'index');
+
+//     Route::post('', 'store');
+
+//     Route::get('/tables/prepare/complete', 'getTablesWithPreparedOrCompleteOrders');
+
+//     Route::get('prepare', 'prepareOrders');
+
+//     Route::get('served', 'servedOrders');
+
+//     Route::get('/{id}', 'show');
+
+//     Route::get('/tables/complete/{id}', 'getOrderOrCompleteTable');
+//     Route::get('/tables/served/{id}', 'getOrderServedByTable');
+
+
+//     Route::post('served/{order_id}', 'markOrderAsServed');
+
+//     Route::post('paid/{order_id}', 'markOrderAsPaid');
+
+
+
+//     Route::put('kitchen/{id}', 'changeOrderStatus');
+// });
+
+// Route::prefix('order_products')->controller(OrderProductController::class)->group(function () {
+
+//     Route::put('{orderId}/cancel/{orderProductId}', 'cancelOrderProducts');
+//     Route::put('{orderId}/complete/{orderProductId}', 'completeOrderProducts');
+// });
+
+// //Categories API Methods For Admin
+// Route::prefix('category')->controller(CartegoryController::class)->group(function () {
+//     Route::get('/', 'index');
+
+//     Route::post('/', 'store');
+
+//     Route::get('/{category}/edit', 'edit');
+
+//     Route::put('/{category}', 'update');
+
+//     Route::put('/{category}/status', 'changeStatus');
+
+//     Route::get('/show', 'show');
+
+//     Route::delete('/{category}', 'destroy');
+// });
+
+// //Cart API Methods For
+// Route::prefix('cart')->controller(CartController::class)->group(function () {
+//     Route::get('/', 'index');
+
+//     Route::post('/', 'store');
+
+//     Route::put('/', 'update');
+
+//     Route::delete('/', 'destroy');
+// });

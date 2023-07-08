@@ -17,7 +17,7 @@ class CartController extends Controller
     use ApiRespone;
     private $user_id ;
     public function __construct() {
-        $this->user_id = 3;
+        $this->user_id = auth()->user()->id;
     }
     /**
      * Display all stored products

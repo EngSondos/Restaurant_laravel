@@ -79,7 +79,7 @@ class CartegoryController extends Controller
             $data['image'] = $imageName;
             Media::delete($category->image);
         }
-        
+
         if (DB::table('categories')->where('id', $category->id)->update($data))
             return $this->success('Category updated successfully');
         return $this->success('Category is not being updated');
@@ -96,11 +96,17 @@ class CartegoryController extends Controller
             return $this->error('status is required');
 
         $filteredproducts = DB::table('products')->select('*')->where('category_id', '=', $category->id)->get();
-
-        if ($filteredproducts->all()) 
-            DB::table('products')->where('category_id',$category->id)->update(['closed'=> !(integer)$data['status']]);
-
+        
         Category::query()->where('id','=', $category->id)->update(['status'=>$data['status']]);
+
+        if ($filteredproducts->all())
+            // DB::table('products')->where('category_id',$category->id)->update(['closed'=> !(integer)$data['status']]);
+            $products = Product::where('category_id',$category->id)->get();
+            foreach($products as $product)
+            {
+                $product->UpdateStaus();
+            }
+
 
         return $this->success('Category now is '.((integer)$data['status']? 'on' : 'off'));
     }
