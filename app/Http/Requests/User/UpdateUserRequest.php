@@ -30,14 +30,14 @@ class UpdateUserRequest extends FormRequest
                 'email',
                 'max:255',
                 'regex:/^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/',
-                'unique:users,email,'.auth()->user()->id,
+                'unique:users,email,'.$this->id,
 
             ],
             'phone' => [
             'string',
             'size:11',
             'regex:/^[0-9]+$/',
-           'unique:users,phone,'.auth()->user()->id,
+           'unique:users,phone,'.$this->id,
 
 
          ],

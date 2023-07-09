@@ -8,6 +8,7 @@ use App\Models\Reservation;
 use App\Models\Table;
 use App\Traits\ApiRespone;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
 class ReservationController extends Controller
@@ -45,7 +46,6 @@ class ReservationController extends Controller
 
      $reservation =   Reservation::with(['table','customer'])->where('table_id','=',$table_id)
      ->where(DB::raw("DATE_FORMAT(start_date, '%Y-%m-%d')"), '=', now()->toDateString())->where('status','accepted')->get();
-    //  dd($reservation);
      return $this->sendData('',$reservation);
     }
 
@@ -65,7 +65,7 @@ class ReservationController extends Controller
         $reservation = new Reservation;
         $reservation->start_date = $request->input('start_date');
         $reservation->table_id = $request->input('table_id');
-        $reservation->customer_id = auth()->user()->id;
+        $reservation->customer_id = Auth::guard('customers')->id();
 
         if($reservation->save())
             return $this->success('Reservation Added Successfully');
@@ -118,7 +118,7 @@ class ReservationController extends Controller
     public function getReservationByCustomerId()
     {
         // $reservtions =  Reservation::with(['table'])->where('customer_id','=',4)->get();
-         $reservtions =  Reservation::with(['table'])->where('customer_id','=',auth()->user()->id)->paginate(8);
+         $reservtions =  Reservation::with(['table'])->where('customer_id','=',Auth::guard('customers')->id())->orderBy('start_date','desc')->paginate(8);
 
         return $this->sendData('',$reservtions);
     }

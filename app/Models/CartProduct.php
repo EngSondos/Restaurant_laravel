@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class CartProduct extends Model
 {
-    
+
     use HasFactory;
 
     protected $table = 'cart_product';
@@ -15,12 +15,14 @@ class CartProduct extends Model
         'user_id',
         'product_id',
         'total_price',
-        'quantity'
+        'quantity',
+        'customer_id'
+
     ];
 
     public function product()
-    {  
-        return $this->hasOne(Product::class,'id','product_id'); 
+    {
+        return $this->hasOne(Product::class,'id','product_id');
     }
 
 }

@@ -7,6 +7,7 @@ use App\Http\Controllers\ReservationController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\CartegoryController;
 use App\Http\Controllers\CustomerAuthController;
+use App\Http\Controllers\CustomerCartController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
@@ -157,7 +158,7 @@ Route::prefix('users')->middleware(['auth:users','role:Admin'])->controller(User
 // });
 
 //Orders API Methods For Waiter
-Route::prefix('orders')->middleware("auth:users")->controller(OrderController::class)->group(function () {
+Route::prefix('orders')->middleware("auth:users,customers")->controller(OrderController::class)->group(function () {
    Route::get('', 'index');
 
     Route::post('', 'store');
@@ -191,7 +192,6 @@ Route::prefix('order_products')->middleware("auth:users")->controller(OrderProdu
 
 //Categories API Methods For Admin
 Route::prefix('category')->middleware(["auth:users","role:Admin"])->controller(CartegoryController::class)->group(function () {
-    Route::get('/', 'index');
 
     Route::post('/', 'store');
 
@@ -204,8 +204,15 @@ Route::prefix('category')->middleware(["auth:users","role:Admin"])->controller(C
     Route::delete('/{category}', 'destroy');
 });
 
+Route::prefix('category')->middleware(["auth:users,customers","role:Admin,Waiter"])->controller(CartegoryController::class)->group(function () {
+
+    Route::get('/', 'index');
+});
+
+
+
 // Cart API Methods For
-Route::prefix('cart')->middleware(["auth:users","role:Waiter"])->controller(CartController::class)->group(function () {
+Route::prefix('cart')->middleware(["auth:users,customers","role:Waiter"])->controller(CartController::class)->group(function () {
     Route::get('/', 'index');
 
     Route::post('/', 'store');
@@ -213,6 +220,16 @@ Route::prefix('cart')->middleware(["auth:users","role:Waiter"])->controller(Cart
     Route::put('/', 'update');
 
     Route::delete('/', 'destroy');
+});
+
+Route::prefix('cart')->middleware(["auth:customers"])->controller(CustomerCartController::class)->group(function () {
+    Route::get('/customer', 'index');
+
+    Route::post('/customer', 'store');
+
+    Route::put('/customer', 'update');
+
+    Route::delete('/customer', 'destroy');
 });
 
 //-------------------------------------------------------Without Middelwares---------------------------------------------------
