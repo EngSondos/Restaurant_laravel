@@ -130,10 +130,12 @@ Route::prefix('users')->middleware(['auth:users','role:Admin'])->controller(User
 
     Route::get('/{id}', 'show');
 
-    Route::put('/{id}', 'update');
-
     Route::delete('/{id}', 'destroy');
+
 });
+Route::put('users/{id}', [UserController::class,'update'])->middleware('auth:users');
+
+
 
 
 //Tables API Methods For Admin
