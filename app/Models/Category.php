@@ -14,7 +14,8 @@ class Category extends Model
     protected $fillable =[
         'name',
         'image',
-        'created_at'
+        'created_at',
+        'status'
     ];
 
     public function products():HasMany

@@ -88,27 +88,29 @@ class CartegoryController extends Controller
     /*
     ** Change Category Status
     */
-    public function changeStatus(Request $req, Category $category)
+    public function changeStatus(Request $req ,$category)
     {
         $data = $req->except('_method');
 
-        if(!$data)
+        if(!isset($data['status']))
             return $this->error('status is required');
 
-        $filteredproducts = DB::table('products')->select('*')->where('category_id', '=', $category->id)->get();
-        
-        Category::query()->where('id','=', $category->id)->update(['status'=>$data['status']]);
+        $filteredproducts = DB::table('products')->select('status')->where('category_id', '=', $category)->get();
+        DB::table('categories')->where('id', $category)->update(['status' => $data['status']]);
 
-        if ($filteredproducts->all())
-            // DB::table('products')->where('category_id',$category->id)->update(['closed'=> !(integer)$data['status']]);
-            $products = Product::where('category_id',$category->id)->get();
+
+        if ($filteredproducts->all()){
+            $products = Product::where('category_id',$category)->get();
             foreach($products as $product)
             {
+                DB::table('products')->where('category_id',$category)->update(['closed'=> !(integer)$data['status']]);
+
                 $product->UpdateStaus();
             }
+        }
 
 
-        return $this->success('Category now is '.((integer)$data['status']? 'on' : 'off'));
+        return $this->sendData('Category now is '.((integer)$data['status']? 'on' : 'off'),$category);
     }
 
 
@@ -118,10 +120,10 @@ class CartegoryController extends Controller
     public function destroy(Category $category)
     {
         $filteredproducts = DB::table('products')->select('*')->where('category_id', '=', $category->id)->get();
+        DB::table('categories')->where('id', $category->id)->update(['status' => '0']);
 
         if (sizeof($filteredproducts->all()) > 0) {
-            DB::table('products')->where('category_id',$category->id)->update(['closed'=> 1]);
-            DB::table('categories')->where('id', $category->id)->update(['status' => '0']);
+            DB::table('products')->where('category_id',$category->id)->update(['closed'=> 1,'status'=>'0']);
             return $this->success('Category cannot be deleted, but it\'s now unavialable',);
         } else {
             $category->delete();
