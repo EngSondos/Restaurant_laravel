@@ -25,6 +25,8 @@ class ProductController extends Controller
         return Product::with('category')->paginate(8,['id','name','image','status','closed','total_price','category_id']);
     }
 
+    
+
     /**
      * Store a newly created resource in storage.
      */
@@ -158,6 +160,9 @@ class ProductController extends Controller
 
         if (!$porduct) {
             return $this->error('This Product Not Exist');
+        }
+        if(!$porduct->status){
+            return $this->error("Can't Edit in Status , Category Or Ingridents Is Closed");
         }
         $porduct->closed=!$porduct->closed;
         if ($porduct->save()) {

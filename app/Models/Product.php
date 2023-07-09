@@ -47,13 +47,13 @@ class Product extends Model
 
     public function UpdateStaus()
     {
-        if($this->closed)
-        {
+        // if($this->closed)
+        // {
 
-            $this->status=!$this->status;
-            return $this->save();
+        //     $this->status=!$this->status;
+        //     return $this->save();
 
-        }
+        // }
         if($this->getStatusofCategory())
         {
             foreach ($this->ingredients as $ingredient)
