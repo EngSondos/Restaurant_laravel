@@ -25,7 +25,7 @@ class ProductController extends Controller
         return Product::with('category')->paginate(8,['id','name','image','status','closed','total_price','category_id']);
     }
 
-    
+
 
     /**
      * Store a newly created resource in storage.

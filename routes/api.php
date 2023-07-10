@@ -83,6 +83,8 @@ Route::controller(ProductController::class)->middleware(['auth:users,customers',
 Route::get('search/product', 'search');
 
 Route::get('active/product', 'getActiveProducts');
+Route::get('products/category/{id}','getProductsByCategoryId');
+
 });
 
 //Reservation API
