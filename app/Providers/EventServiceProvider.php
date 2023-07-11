@@ -6,6 +6,15 @@ use Illuminate\Auth\Events\Registered;
 use Illuminate\Auth\Listeners\SendEmailVerificationNotification;
 use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Event;
+use App\Events\OrderCreated;
+use App\Listeners\UpdateIngredientQuantities;
+use App\Listeners\insertOrderProductImage;
+
+use App\Events\OrderProductCanceled;
+use App\Listeners\OnOrderProductCanceled;
+
+
+
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -18,7 +27,21 @@ class EventServiceProvider extends ServiceProvider
         Registered::class => [
             SendEmailVerificationNotification::class,
         ],
+
+        OrderCreated::class => [
+            UpdateIngredientQuantities::class,
+
+        ],
+
+
+        OrderProductCanceled::class => [
+            OnOrderProductCanceled::class
+
+        ],
     ];
+
+
+
 
     /**
      * Register any events for your application.
