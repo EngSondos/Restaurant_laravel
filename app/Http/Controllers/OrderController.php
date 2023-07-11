@@ -57,18 +57,18 @@ class OrderController extends Controller
         $data['total_price'] = $total_price;
 
         $customer_id = $request->input('customer_id');
-        // $user_id = $request->input('user_id');
-        $user_id = auth()->user()->id;        
+        $user_id = $request->input('user_id');
+        // $user_id = auth()->user()->id;        
         $reservation_id = $request->input('reservation_id');
 
         $accepted_reservation = null;
 
-            $customerId = Auth::guard('customers')->id();        
-        if ($customerId &&  $request->has('start_date') ) {
+            // $customerId = Auth::guard('customers')->id();        
+        if ($customer_id&& !$user_id && $request->has('start_date') ) {
             $reservationData = [
                 'start_date' => $request->input('start_date'),
                 'status' => 'progress',
-                'customer_id' => $customerId,
+                'customer_id' => $customer_id,
                 'table_id' => $request->input('table_id'),
                 'order_id' => null,
             ];
