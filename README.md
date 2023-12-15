@@ -30,6 +30,6 @@ To run the app locally,
 - Then change to the directory where the repository is cloned.
 - Create Database in mysql 
 - Create .env file (rename .env-example to .env)
-- Add You Database information in .env file.
+- Add Your Database information in .env file.
 - Run `php artisan migrate` to create tables in database.
 - Run `php artisan serve` to run the application.
